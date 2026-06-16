@@ -194,7 +194,6 @@
         <p class="subtitle">Create new training programs or wipe out expired configurations live.</p>
 
         <div class="nav-buttons">
-            <a class="btn-nav" href="index.html">← Go to Registration Form</a>
             <a class="btn-nav" href="registrations.html">View User Log Dashboard →</a>
         </div>
 
@@ -228,8 +227,7 @@
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody id="courseTableBody">
-                        </tbody>
+                    <tbody id="courseTableBody"></tbody>
                 </table>
             </div>
 
@@ -239,13 +237,11 @@
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-        // Connects to your global public access Supabase core instance infrastructure
         const client = createClient(
             "https://pqgkdnxdsybcfamwadrf.supabase.co",
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxZ2tkbnhkc3liY2ZhbXdhZHJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MzE0NjUsImV4cCI6MjA5NzEwNzQ2NX0.lugWuqNI5VMy6hCn-y38-hi825pIHcUjOCAWCsMJz4c"
         );
 
-        // Fetch and show courses immediately when page is loaded
         async function renderCoursesDashboard() {
             const { data, error } = await client
                 .from('courses')
@@ -278,10 +274,8 @@
             `).join('');
         }
 
-        // Initialize display list interface records loop tracking
         renderCoursesDashboard();
 
-        // Operation Handler: Form Entry Submission Insert Controller 
         window.handleAddCourse = async function() {
             const nameField  = document.getElementById('newCourseName');
             const seatsField = document.getElementById('newCourseSeats');
@@ -309,12 +303,10 @@
 
                 alert(`Successfully generated and created "${name}" course program structure inside configuration tables.`);
                 
-                // Clear out entries smoothly
                 nameField.value = "";
                 seatsField.value = "5";
                 dateField.value = "";
                 
-                // Re-sync display matrix contents mapping engine
                 renderCoursesDashboard();
             } catch (err) {
                 alert("Could not append data structures: " + err.message);
@@ -324,7 +316,6 @@
             }
         };
 
-        // Operation Handler: Row Selection Target Purge Execution Engine
         window.handleDeleteCourse = async function(id, name) {
             const confirmed = confirm(`Are you sure you want to permanently delete "${name}"?\n\nWARNING: Deleting this course will automatically delete all user registrations associated with it!`);
             
