@@ -22,7 +22,6 @@
         input, select { width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 15px; }
         input:focus { outline: none; border-color: #2563eb; }
         
-        /* Descriptions wrapper styles */
         .descriptions-panel { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; margin-top: 10px; display: flex; flex-direction: column; gap: 10px; }
         .descriptions-panel h4 { font-size: 13px; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; }
         .desc-row { display: flex; flex-direction: column; gap: 4px; }
@@ -56,7 +55,7 @@
         <p class="subtitle">Set up courses and design custom file descriptions for tracking verification.</p>
 
         <div class="nav-buttons">
-            <a class="btn-nav" href="form.html">Go to Public Registration Form →</a>
+            <!-- Public Registration Form Button Removed -->
             <a class="btn-nav" href="registrations.html">Go to Registration Logs Dashboard →</a>
         </div>
 
@@ -119,7 +118,6 @@
 
         const form = document.getElementById('courseForm');
         
-        // Generates textual definition fields immediately on screen when numbers change
         window.generateDescriptionInputs = function(prefilledValues = []) {
             const count = Math.max(1, Number(document.getElementById('requiredFilesCount').value || 1));
             const container = document.getElementById('descriptionInputsContainer');
@@ -167,7 +165,6 @@
             const course_date = document.getElementById('courseDate').value;
             const seats = Number(document.getElementById('courseSeats').value);
             
-            // Gather values entered into description lines
             const inputElements = document.querySelectorAll('.custom-label-input');
             const file_labels = Array.from(inputElements).map(input => input.value.trim() || "Required Document");
 
@@ -215,7 +212,6 @@
             fetchCourses();
         };
 
-        // Initialize default input field on system launch
         generateDescriptionInputs();
         fetchCourses();
     </script>
