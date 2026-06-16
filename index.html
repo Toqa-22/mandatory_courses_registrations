@@ -7,14 +7,14 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
         body { background: #f4f7fc; min-height: 100vh; padding: 40px 20px; }
-        .container { max-width: 1300px; margin: auto; }
+        .container { max-width: 1400px; margin: auto; }
         .title { text-align: center; font-size: 45px; color: #0f172a; margin-bottom: 10px; }
         .subtitle { text-align: center; color: #64748b; margin-bottom: 40px; }
         .nav-buttons { display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; }
         .btn-nav { padding: 12px 24px; background: white; border: 2px solid #2563eb; color: #2563eb; font-size: 15px; border-radius: 12px; cursor: pointer; text-decoration: none; font-weight: bold; }
         .btn-nav:hover { background: #eff6ff; }
-        .main-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; }
-        @media(max-width: 950px) { .main-grid { grid-template-columns: 1fr; } }
+        .main-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; margin-bottom: 40px; }
+        @media(max-width: 1024px) { .main-grid { grid-template-columns: 1fr; } }
         .card { background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,.06); height: fit-content; }
         .card h2 { margin-bottom: 20px; color: #0f172a; font-size: 22px; }
         .form-group { margin-bottom: 15px; }
@@ -37,6 +37,8 @@
         tbody tr { border-bottom: 1px solid #f1f5f9; }
         tbody td { padding: 14px; color: #0f172a; vertical-align: top; }
         .badge { background: #eff6ff; color: #2563eb; padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: bold; display: inline-block; }
+        .badge-alt { background: #f0fdf4; color: #16a34a; padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: bold; display: inline-block; }
+        .badge-danger { background: #fef2f2; color: #dc2626; padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: bold; display: inline-block; }
         
         .label-container { display: flex; flex-direction: column; gap: 4px; }
         .label-tag { background: #f3e8ff; color: #7c3aed; padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; width: fit-content; }
@@ -52,10 +54,10 @@
 
     <div class="container">
         <h1 class="title">Course Configuration</h1>
-        <p class="subtitle">Set up courses and design custom file descriptions for tracking verification.</p>
+        <p class="subtitle">Design courses, allocate custom file slots, and provision institutional quota bounds.</p>
 
         <div class="nav-buttons">
-            <!-- Public Registration Form Button Removed -->
+            <a class="btn-nav" href="form.html" target="_blank">🔗 Open Public Registration Form ↗</a>
             <a class="btn-nav" href="registrations.html">Go to Registration Logs Dashboard →</a>
         </div>
 
@@ -106,6 +108,39 @@
                 </table>
             </div>
         </div>
+
+        <div class="main-grid">
+            <div class="card">
+                <h2>Add Allowed Institution</h2>
+                <form id="instForm">
+                    <div class="form-group">
+                        <label>Institution Official Name</label>
+                        <input type="text" id="instName" placeholder="e.g., City Medical General Hospital" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Allowed Registration Limit (Quota)</label>
+                        <input type="number" id="instMaxSlots" placeholder="e.g., 5" min="1" required>
+                    </div>
+                    <button type="submit" class="btn-submit">Add Institution to Pool</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Monitored Institutional Quota Allocations</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Institution Name</th>
+                            <th>Registration Cap Limit</th>
+                            <th>Current Signups</th>
+                            <th>Status Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="instTableBody"></tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <script type="module">
@@ -116,7 +151,8 @@
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxZ2tkbnhkc3liY2ZhbXdhZHJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MzE0NjUsImV4cCI6MjA5NzEwNzQ2NX0.lugWuqNI5VMy6hCn-y38-hi825pIHcUjOCAWCsMJz4c"
         );
 
-        const form = document.getElementById('courseForm');
+        const courseForm = document.getElementById('courseForm');
+        const instForm = document.getElementById('instForm');
         
         window.generateDescriptionInputs = function(prefilledValues = []) {
             const count = Math.max(1, Number(document.getElementById('requiredFilesCount').value || 1));
@@ -128,7 +164,7 @@
                 html += `
                     <div class="desc-row">
                         <span>Description for File #${i}:</span>
-                        <input type="text" class="custom-label-input" value="${existingVal}" placeholder="e.g., Copy of Civil ID or Certificate" required>
+                        <input type="text" class="custom-label-input" value="${existingVal}" placeholder="e.g., Copy of Civil ID" required>
                     </div>
                 `;
             }
@@ -158,7 +194,31 @@
             }).join('');
         }
 
-        form.addEventListener('submit', async (e) => {
+        async function fetchInstitutions() {
+            const { data, error } = await client.from('institutions').select('*').order('id', { ascending: true });
+            if (error) return console.error(error);
+
+            document.getElementById('instTableBody').innerHTML = data.map(i => {
+                const isFull = i.registered_count >= i.max_slots;
+                const statusBadge = isFull 
+                    ? `<span class="badge-danger">Full (Hidden)</span>` 
+                    : `<span class="badge-alt">Active (${i.max_slots - i.registered_count} open)</span>`;
+
+                return `
+                    <tr>
+                        <td><b>${i.name}</b></td>
+                        <td><span class="badge">${i.max_slots} maximum users</span></td>
+                        <td><b>${i.registered_count}</b> filled</td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <button class="btn-action btn-del" onclick="deleteInstitution(${i.id})">Remove</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        courseForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('courseId').value;
             const name = document.getElementById('courseName').value;
@@ -182,7 +242,7 @@
                 await client.from('courses').insert(payload);
             }
 
-            form.reset();
+            courseForm.reset();
             document.getElementById('courseId').value = '';
             document.getElementById('requiredFilesCount').value = '1';
             document.getElementById('formTitle').innerText = "Create New Course";
@@ -191,9 +251,22 @@
             fetchCourses();
         });
 
+        instForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('instName').value.trim();
+            const max_slots = Number(document.getElementById('instMaxSlots').value);
+
+            const { error } = await client.from('institutions').insert({ name, max_slots });
+            if (error) {
+                alert("Error adding institution: " + error.message);
+            } else {
+                instForm.reset();
+                fetchInstitutions();
+            }
+        });
+
         window.editCourse = function(id, name, date, seats, labelsJoined) {
             const labelsArray = labelsJoined.split('|||');
-            
             document.getElementById('courseId').value = id;
             document.getElementById('courseName').value = name;
             document.getElementById('courseDate').value = date;
@@ -212,8 +285,15 @@
             fetchCourses();
         };
 
+        window.deleteInstitution = async function(id) {
+            if (!confirm("Remove this institution configuration? Existing logs will maintain text reference name fallback values.")) return;
+            await client.from('institutions').delete().eq('id', id);
+            fetchInstitutions();
+        };
+
         generateDescriptionInputs();
         fetchCourses();
+        fetchInstitutions();
     </script>
 </body>
 </html>
