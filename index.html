@@ -43,9 +43,10 @@
         .badge { background: #eff6ff; color: #2563eb; padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: bold; display: inline-block; }
         .badge-none { background: #f0fdf4; color: #16a34a; padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: bold; display: inline-block; }
         
-        .label-container { display: flex; flex-direction: column; gap: 6px; }
-        .label-tag { background: #f3e8ff; color: #7c3aed; padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; width: fit-content; display: flex; flex-direction: column; gap: 2px; }
+        .label-container { display: flex; flex-direction: column; gap: 8px; }
+        .label-tag { background: #f3e8ff; color: #7c3aed; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: bold; width: 100%; display: flex; flex-direction: column; gap: 6px; border: 1px solid #e9d5ff; }
         .label-tag small { color: #64748b; font-weight: normal; font-size: 11px; }
+        .preview-img-thumbnail { width: 100%; max-width: 140px; height: auto; border-radius: 6px; border: 1px solid #cbd5e1; margin-top: 4px; display: block; object-fit: cover; background: #f8fafc; }
         
         .btn-action { padding: 6px 12px; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: bold; }
         .btn-edit { background: #f1f5f9; color: #1e293b; margin-right: 5px; }
@@ -186,8 +187,17 @@
                     tagsHtml = `<span class="badge-none">✅ No Attachments Required</span>`;
                 } else {
                     tagsHtml = labels.map((l, index) => {
-                        const hasImg = examples[index] ? '🔗 Example Added' : 'No Example Image';
-                        return `<span class="label-tag">${index + 1}. ${l} <small>(${hasImg})</small></span>`;
+                        const imgUrl = examples[index];
+                        // If image URL exists, render an actual img tag instead of just text labels
+                        const imgPreviewHtml = (imgUrl && imgUrl.trim() !== '') 
+                            ? `<a href="${imgUrl}" target="_blank"><img src="${imgUrl}" class="preview-img-thumbnail" alt="Example Snapshot" onerror="this.style.display='none'"></a>` 
+                            : '<small style="color:#94a3b8; display:block; margin-top:2px;">(No Example Image Attached)</small>';
+                        
+                        return `
+                            <span class="label-tag">
+                                <div><b>${index + 1}. ${l}</b></div>
+                                ${imgPreviewHtml}
+                            </span>`;
                     }).join('');
                 }
 
