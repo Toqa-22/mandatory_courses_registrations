@@ -19,7 +19,6 @@
         .card h2 { margin-bottom: 20px; color: #0f172a; font-size: 22px; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 8px; color: #334155; font-size: 14px; font-weight: bold; }
-        .input-hint { font-size: 12px; color: #64748b; font-weight: normal; margin-top: 4px; display: block; }
         input, select { width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 15px; }
         input:focus { outline: none; border-color: #2563eb; }
         .btn-submit { width: 100%; padding: 14px; background: linear-gradient(90deg, #2563eb, #7c3aed); border: none; color: white; font-size: 16px; border-radius: 12px; cursor: pointer; font-weight: bold; margin-top: 10px; }
@@ -28,10 +27,9 @@
         thead tr { background: #f8fafc; border-bottom: 2px solid #e2e8f0; }
         thead th { padding: 14px; text-align: left; color: #475569; font-weight: bold; }
         tbody tr { border-bottom: 1px solid #f1f5f9; }
-        tbody td { padding: 14px; color: #0f172a; vertical-align: top; }
+        tbody td { padding: 14px; color: #0f172a; vertical-align: middle; }
         .badge { background: #eff6ff; color: #2563eb; padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: bold; display: inline-block; }
-        .label-list { display: flex; flex-direction: column; gap: 4px; margin-top: 2px; }
-        .label-item { font-size: 12px; background: #f3e8ff; color: #7c3aed; padding: 2px 8px; border-radius: 6px; width: fit-content; font-weight: bold; }
+        .file-count-badge { background: #f3e8ff; color: #7c3aed; padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: bold; display: inline-block; }
         .btn-action { padding: 6px 12px; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: bold; }
         .btn-edit { background: #f1f5f9; color: #1e293b; margin-right: 5px; }
         .btn-edit:hover { background: #e2e8f0; }
@@ -43,7 +41,7 @@
 
     <div class="container">
         <h1 class="title">Course Configuration</h1>
-        <p class="subtitle">Manage courses, seat capacities, and expected file tracking requirements.</p>
+        <p class="subtitle">Manage courses, seat capacities, and required tracking documentation limits.</p>
 
         <div class="nav-buttons">
             <a class="btn-nav" href="form.html">Go to Public Registration Form →</a>
@@ -68,9 +66,8 @@
                         <input type="number" id="courseSeats" placeholder="e.g., 25" min="0" required>
                     </div>
                     <div class="form-group">
-                        <label>Names of Files Needed</label>
-                        <input type="text" id="fileLabelsInput" placeholder="e.g., ID Card, Work Certificate" required>
-                        <span class="input-hint">Separate individual requests by commas. The list items decide total items needed.</span>
+                        <label>Number of Required Documents</label>
+                        <input type="number" id="requiredFilesCount" placeholder="e.g., 2" min="1" max="10" value="1" required>
                     </div>
                     <button type="submit" class="btn-submit" id="submitBtn">Save Course Setup</button>
                 </form>
@@ -84,7 +81,7 @@
                             <th>Name</th>
                             <th>Date</th>
                             <th>Chairs Left</th>
-                            <th>Expected Document Requirements</th>
+                            <th>Required Files</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -109,17 +106,22 @@
             if (error) return console.error(error);
 
             document.getElementById('courseTableBody').innerHTML = data.map(c => {
-                const labels = Array.isArray(c.file_labels) && c.file_labels.length > 0 ? c.file_labels : ["Required Document"];
-                const labelsHtml = labels.map((l, idx) => `<span class="label-item">${idx + 1}. ${l}</span>`).join('');
+                // Determine count dynamically based on database column setup structure
+                let count = 1;
+                if (c.required_files !== undefined) {
+                    count = c.required_files;
+                } else if (Array.isArray(c.file_labels)) {
+                    count = c.file_labels.length;
+                }
 
                 return `
                     <tr>
                         <td><b>${c.name}</b></td>
                         <td>${c.course_date}</td>
                         <td><span class="badge">${c.seats} chairs</span></td>
-                        <td><div class="label-list">${labelsHtml}</div></td>
+                        <td><span class="file-count-badge">📂 ${count} File(s) Required</span></td>
                         <td>
-                            <button class="btn-action btn-edit" onclick="editCourse(${c.id}, '${c.name.replace(/'/g, "\\'")}', '${c.course_date}', ${c.seats}, '${labels.join(', ').replace(/'/g, "\\'")}')">Edit</button>
+                            <button class="btn-action btn-edit" onclick="editCourse(${c.id}, '${c.name.replace(/'/g, "\\'")}', '${c.course_date}', ${c.seats}, ${count})">Edit</button>
                             <button class="btn-action btn-del" onclick="deleteCourse(${c.id})">Delete</button>
                         </td>
                     </tr>
@@ -133,33 +135,42 @@
             const name = document.getElementById('courseName').value;
             const course_date = document.getElementById('courseDate').value;
             const seats = Number(document.getElementById('courseSeats').value);
-            
-            const file_labels = document.getElementById('fileLabelsInput').value
-                .split(',')
-                .map(item => item.trim())
-                .filter(item => item.length > 0);
+            const count = Number(document.getElementById('requiredFilesCount').value);
 
-            const finalLabels = file_labels.length > 0 ? file_labels : ["Required Document"];
+            // Creates structural payload for compatibility fallback parameters
+            const labelsArray = [];
+            for(let i=1; i <= count; i++) {
+                labelsArray.push(`Document #${i}`);
+            }
+
+            const payload = { 
+                name, 
+                course_date, 
+                seats,
+                required_files: count,
+                file_labels: labelsArray 
+            };
 
             if (id) {
-                await client.from('courses').update({ name, course_date, seats, file_labels: finalLabels }).eq('id', id);
+                await client.from('courses').update(payload).eq('id', id);
             } else {
-                await client.from('courses').insert({ name, course_date, seats, file_labels: finalLabels });
+                await client.from('courses').insert(payload);
             }
 
             form.reset();
             document.getElementById('courseId').value = '';
+            document.getElementById('requiredFilesCount').value = '1';
             document.getElementById('formTitle').innerText = "Create New Course";
             document.getElementById('submitBtn').innerText = "Save Course Setup";
             fetchCourses();
         });
 
-        window.editCourse = function(id, name, date, seats, labelsString) {
+        window.editCourse = function(id, name, date, seats, count) {
             document.getElementById('courseId').value = id;
             document.getElementById('courseName').value = name;
             document.getElementById('courseDate').value = date;
             document.getElementById('courseSeats').value = seats;
-            document.getElementById('fileLabelsInput').value = labelsString || "Required Document";
+            document.getElementById('requiredFilesCount').value = count;
             document.getElementById('formTitle').innerText = "Modify Course #" + id;
             document.getElementById('submitBtn').innerText = "Apply Updates";
         };
