@@ -37,8 +37,6 @@
         tbody tr { border-bottom: 1px solid #f1f5f9; }
         tbody td { padding: 14px; color: #0f172a; vertical-align: top; }
         .badge { background: #eff6ff; color: #2563eb; padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: bold; display: inline-block; }
-        .badge-alt { background: #f0fdf4; color: #16a34a; padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: bold; display: inline-block; }
-        .badge-danger { background: #fef2f2; color: #dc2626; padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: bold; display: inline-block; }
         
         .label-container { display: flex; flex-direction: column; gap: 6px; }
         .label-tag { background: #f3e8ff; color: #7c3aed; padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; width: fit-content; display: flex; flex-direction: column; gap: 2px; }
@@ -55,7 +53,7 @@
 
     <div class="container">
         <h1 class="title">Course Configuration</h1>
-        <p class="subtitle">Design courses, allocate custom file slots, and provision institutional quota bounds.</p>
+        <p class="subtitle">Design courses, allocate custom file slots, and provision target parameters.</p>
 
         <div class="nav-buttons">
             <a class="btn-nav" href="registrations.html">Go to Registration Logs Dashboard →</a>
@@ -108,46 +106,6 @@
                 </table>
             </div>
         </div>
-
-        <div class="main-grid">
-            <div class="card">
-                <h2>Assign Institution Quota to Course Room</h2>
-                <form id="instForm">
-                    <div class="form-group">
-                        <label>Target Course Room Scope</label>
-                        <select id="allocCourseSelect" required>
-                            <option value="">-- Choose Course Room --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Institution Official Name</label>
-                        <input type="text" id="instName" placeholder="e.g., City Medical General Hospital" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Allowed Registration Limit (Quota For This Course Only)</label>
-                        <input type="number" id="instMaxSlots" placeholder="e.g., 5" min="1" required>
-                    </div>
-                    <button type="submit" class="btn-submit">Authorize Single Rule Allocation</button>
-                </form>
-            </div>
-
-            <div class="card">
-                <h2>Monitored Institutional Quota Allocations</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Course Scope</th>
-                            <th>Institution Name</th>
-                            <th>Max Allowed</th>
-                            <th>Filled Slots</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="instTableBody"></tbody>
-                </table>
-            </div>
-        </div>
     </div>
 
     <script type="module">
@@ -159,7 +117,6 @@
         );
 
         const courseForm = document.getElementById('courseForm');
-        const instForm = document.getElementById('instForm');
         
         window.generateDescriptionInputs = function(prefilledLabels = [], prefilledImages = []) {
             const count = Math.max(1, Number(document.getElementById('requiredFilesCount').value || 1));
@@ -209,40 +166,6 @@
                     </tr>
                 `;
             }).join('');
-            
-            fetchInstitutions();
-        }
-
-        async function fetchInstitutions() {
-            const { data: currentCourses } = await client.from('courses').select('id, name, course_date').order('id', { ascending: true });
-            document.getElementById('allocCourseSelect').innerHTML = '<option value="">-- Choose Course Room --</option>' + 
-                (currentCourses || []).map(c => `<option value="${c.id}">${c.name} (🗓️ ${c.course_date})</option>`).join('');
-
-            const { data, error } = await client.from('course_institutions').select(`
-                id, max_slots, registered_count,
-                courses(name), institutions(name)
-            `);
-            if (error) return console.error(error);
-
-            document.getElementById('instTableBody').innerHTML = (data || []).map(m => {
-                const isFull = m.registered_count >= m.max_slots;
-                const statusBadge = isFull 
-                    ? `<span class="badge-danger">Full</span>` 
-                    : `<span class="badge-alt">Available</span>`;
-
-                return `
-                    <tr>
-                        <td><small class="badge">${m.courses?.name || 'Deleted Course Scope'}</small></td>
-                        <td><b>${m.institutions?.name || 'Deleted Institution'}</b></td>
-                        <td><span class="badge">${m.max_slots} maximum slots</span></td>
-                        <td><b>${m.registered_count}</b> utilized</td>
-                        <td>${statusBadge}</td>
-                        <td>
-                            <button class="btn-action btn-del" onclick="deleteInstitution(${m.id})">Drop Rule</button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
         }
 
         courseForm.addEventListener('submit', async (e) => {
@@ -282,35 +205,6 @@
             fetchCourses();
         });
 
-        instForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const course_id = Number(document.getElementById('allocCourseSelect').value);
-            const instName = document.getElementById('instName').value.trim();
-            const max_slots = Number(document.getElementById('instMaxSlots').value);
-
-            if (!course_id) return alert("Please specify a target course room scope.");
-
-            let { data: inst } = await client.from('institutions').select('id').eq('name', instName).maybeSingle();
-            if (!inst) {
-                const { data: newInst, error: insErr } = await client.from('institutions').insert({ name: instName }).select().single();
-                if (insErr) return alert("Error processing global token row: " + insErr.message);
-                inst = newInst;
-            }
-
-            const { error = null } = await client.from('course_institutions').insert({
-                course_id,
-                institution_id: inst.id,
-                max_slots
-            });
-
-            if (error) {
-                alert("Conflict: This specific allocation assignment rule is already registered.");
-            } else {
-                instForm.reset();
-                fetchInstitutions();
-            }
-        });
-
         window.editCourse = function(id, name, date, seats, labelsArray, examplesArray) {
             document.getElementById('courseId').value = id;
             document.getElementById('courseName').value = name;
@@ -328,12 +222,6 @@
             if (!confirm("Are you sure you want to remove this course configuration completely?")) return;
             await client.from('courses').delete().eq('id', id);
             fetchCourses();
-        };
-
-        window.deleteInstitution = async function(id) {
-            if (!confirm("Drop this isolated institution course quota rule mapping configuration?")) return;
-            await client.from('course_institutions').delete().eq('id', id);
-            fetchInstitutions();
         };
 
         generateDescriptionInputs();
