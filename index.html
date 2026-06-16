@@ -22,10 +22,10 @@
         input, select { width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 15px; }
         input:focus { outline: none; border-color: #2563eb; }
         
-        .descriptions-panel { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; margin-top: 10px; display: flex; flex-direction: column; gap: 10px; }
+        .descriptions-panel { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; margin-top: 10px; display: flex; flex-direction: column; gap: 15px; }
         .descriptions-panel h4 { font-size: 13px; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; }
-        .desc-row { display: flex; flex-direction: column; gap: 4px; }
-        .desc-row span { font-size: 12px; color: #64748b; font-weight: bold; }
+        .desc-row { background: white; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 8px; }
+        .desc-row span { font-size: 13px; color: #2563eb; font-weight: bold; }
         .desc-row input { padding: 8px 12px; font-size: 14px; }
 
         .btn-submit { width: 100%; padding: 14px; background: linear-gradient(90deg, #2563eb, #7c3aed); border: none; color: white; font-size: 16px; border-radius: 12px; cursor: pointer; font-weight: bold; margin-top: 15px; }
@@ -40,8 +40,9 @@
         .badge-alt { background: #f0fdf4; color: #16a34a; padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: bold; display: inline-block; }
         .badge-danger { background: #fef2f2; color: #dc2626; padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: bold; display: inline-block; }
         
-        .label-container { display: flex; flex-direction: column; gap: 4px; }
-        .label-tag { background: #f3e8ff; color: #7c3aed; padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; width: fit-content; }
+        .label-container { display: flex; flex-direction: column; gap: 6px; }
+        .label-tag { background: #f3e8ff; color: #7c3aed; padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; width: fit-content; display: flex; flex-direction: column; gap: 2px; }
+        .label-tag small { color: #64748b; font-weight: normal; font-size: 11px; }
         
         .btn-action { padding: 6px 12px; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: bold; }
         .btn-edit { background: #f1f5f9; color: #1e293b; margin-right: 5px; }
@@ -83,7 +84,7 @@
                     </div>
                     
                     <div class="descriptions-panel" id="descriptionsWrapper">
-                        <h4>Document Descriptions</h4>
+                        <h4>Document Descriptions & Examples</h4>
                         <div id="descriptionInputsContainer"></div>
                     </div>
 
@@ -160,17 +161,19 @@
         const courseForm = document.getElementById('courseForm');
         const instForm = document.getElementById('instForm');
         
-        window.generateDescriptionInputs = function(prefilledValues = []) {
+        window.generateDescriptionInputs = function(prefilledLabels = [], prefilledImages = []) {
             const count = Math.max(1, Number(document.getElementById('requiredFilesCount').value || 1));
             const container = document.getElementById('descriptionInputsContainer');
             let html = '';
             
             for (let i = 1; i <= count; i++) {
-                const existingVal = prefilledValues[i - 1] || `Document #${i}`;
+                const existingLabel = prefilledLabels[i - 1] || `Document #${i}`;
+                const existingImg = prefilledImages[i - 1] || '';
                 html += `
                     <div class="desc-row">
-                        <span>Description for File #${i}:</span>
-                        <input type="text" class="custom-label-input" value="${existingVal}" placeholder="e.g., Copy of Civil ID" required>
+                        <span>Configuration Setup for File #${i}:</span>
+                        <input type="text" class="custom-label-input" value="${existingLabel}" placeholder="Label description (e.g., Copy of Civil ID)" required>
+                        <input type="url" class="custom-image-input" value="${existingImg}" placeholder="Example Image URL (Optional)">
                     </div>
                 `;
             }
@@ -183,7 +186,15 @@
 
             document.getElementById('courseTableBody').innerHTML = data.map(c => {
                 const labels = Array.isArray(c.file_labels) ? c.file_labels : ["Required Document"];
-                const tagsHtml = labels.map((l, index) => `<span class="label-tag">${index + 1}. ${l}</span>`).join('');
+                const examples = Array.isArray(c.file_examples) ? c.file_examples : [];
+                
+                const tagsHtml = labels.map((l, index) => {
+                    const hasImg = examples[index] ? '🔗 Example Added' : 'No Example Image';
+                    return `<span class="label-tag">${index + 1}. ${l} <small>(${hasImg})</small></span>`;
+                }).join('');
+
+                const escapedLabels = JSON.stringify(labels).replace(/"/g, '&quot;');
+                const escapedExamples = JSON.stringify(examples).replace(/"/g, '&quot;');
 
                 return `
                     <tr>
@@ -192,24 +203,21 @@
                         <td><span class="badge">${c.seats} chairs</span></td>
                         <td><div class="label-container">${tagsHtml}</div></td>
                         <td>
-                            <button class="btn-action btn-edit" onclick="editCourse(${c.id}, '${c.name.replace(/'/g, "\\'")}', '${c.course_date}', ${c.seats}, '${labels.join('|||').replace(/'/g, "\\'")}')">Edit</button>
+                            <button class="btn-action btn-edit" onclick="editCourse(${c.id}, '${c.name.replace(/'/g, "\\'")}', '${c.course_date}', ${c.seats}, ${escapedLabels}, ${escapedExamples})">Edit</button>
                             <button class="btn-action btn-del" onclick="deleteCourse(${c.id})">Delete</button>
                         </td>
                     </tr>
                 `;
             }).join('');
             
-            // Trigger an auto-refresh for the lower dropdown component as well
             fetchInstitutions();
         }
 
         async function fetchInstitutions() {
-            // Populate the target course selection dropdown menu
-            const { data: currentCourses } = await client.from('courses').select('id, name').order('id', { ascending: true });
+            const { data: currentCourses } = await client.from('courses').select('id, name, course_date').order('id', { ascending: true });
             document.getElementById('allocCourseSelect').innerHTML = '<option value="">-- Choose Course Room --</option>' + 
-                (currentCourses || []).map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+                (currentCourses || []).map(c => `<option value="${c.id}">${c.name} (🗓️ ${c.course_date})</option>`).join('');
 
-            // Fetch rules context directly from the relational bridging schema layout map
             const { data, error } = await client.from('course_institutions').select(`
                 id, max_slots, registered_count,
                 courses(name), institutions(name)
@@ -244,15 +252,19 @@
             const course_date = document.getElementById('courseDate').value;
             const seats = Number(document.getElementById('courseSeats').value);
             
-            const inputElements = document.querySelectorAll('.custom-label-input');
-            const file_labels = Array.from(inputElements).map(input => input.value.trim() || "Required Document");
+            const labelInputs = document.querySelectorAll('.custom-label-input');
+            const imgInputs = document.querySelectorAll('.custom-image-input');
+            
+            const file_labels = Array.from(labelInputs).map(input => input.value.trim() || "Required Document");
+            const file_examples = Array.from(imgInputs).map(input => input.value.trim() || "");
 
             const payload = { 
                 name, 
                 course_date, 
                 seats, 
                 required_files: file_labels.length, 
-                file_labels: file_labels 
+                file_labels: file_labels,
+                file_examples: file_examples
             };
 
             if (id) {
@@ -278,7 +290,6 @@
 
             if (!course_id) return alert("Please specify a target course room scope.");
 
-            // Verify or dynamically generate baseline core company reference record
             let { data: inst } = await client.from('institutions').select('id').eq('name', instName).maybeSingle();
             if (!inst) {
                 const { data: newInst, error: insErr } = await client.from('institutions').insert({ name: instName }).select().single();
@@ -286,8 +297,7 @@
                 inst = newInst;
             }
 
-            // Map configuration limits securely into the junction matrix table containers
-            const { error } = await client.from('course_institutions').insert({
+            const { error = null } = await client.from('course_institutions').insert({
                 course_id,
                 institution_id: inst.id,
                 max_slots
@@ -301,8 +311,7 @@
             }
         });
 
-        window.editCourse = function(id, name, date, seats, labelsJoined) {
-            const labelsArray = labelsJoined.split('|||');
+        window.editCourse = function(id, name, date, seats, labelsArray, examplesArray) {
             document.getElementById('courseId').value = id;
             document.getElementById('courseName').value = name;
             document.getElementById('courseDate').value = date;
@@ -312,7 +321,7 @@
             document.getElementById('formTitle').innerText = "Modify Course #" + id;
             document.getElementById('submitBtn').innerText = "Apply Updates";
             
-            generateDescriptionInputs(labelsArray);
+            generateDescriptionInputs(labelsArray, examplesArray);
         };
 
         window.deleteCourse = async function(id) {
