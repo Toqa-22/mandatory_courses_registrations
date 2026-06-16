@@ -26,11 +26,10 @@
         tbody tr:hover { background: #f8faff; }
         tbody td { padding: 15px; color: #0f172a; vertical-align: middle; }
         .course-badge { background: #eff6ff; color: #2563eb; padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: bold; }
-        .files-container { display: flex; flex-direction: column; gap: 5px; }
-        .btn-view-file { display: block; text-align: center; background: #f1f5f9; color: #4f46e5; padding: 4px 8px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 12px; border: 1px solid #e2e8f0; }
+        .files-container { display: flex; flex-direction: column; gap: 5px; min-width: 180px; }
+        .btn-view-file { display: block; text-align: left; background: #f1f5f9; color: #4f46e5; padding: 6px 10px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 12px; border: 1px solid #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .btn-view-file:hover { background: #4f46e5; color: white; }
         .btn-delete { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; }
-        .btn-delete:hover { background: #dc2626; }
         .export-btn { padding: 12px 28px; background: linear-gradient(90deg, #2563eb, #7c3aed); border: none; color: white; font-size: 15px; border-radius: 12px; cursor: pointer; }
     </style>
 </head>
@@ -91,11 +90,12 @@
                 return {
                     ...r,
                     course_name: targetCourse ? targetCourse.name : 'Deleted Course',
-                    course_date: targetCourse ? targetCourse.course_date : 'N/A'
+                    course_date: targetCourse ? targetCourse.course_date : 'N/A',
+                    // Map the matching schema array labels down for visual lookup fallback
+                    course_labels: targetCourse && Array.isArray(targetCourse.file_labels) ? targetCourse.file_labels : []
                 };
             });
 
-            // Count total items
             document.getElementById('stats').innerHTML = `
                 <div class="stat-card">
                     <div class="stat-label">Total Logs</div>
@@ -104,13 +104,13 @@
             `;
 
             document.getElementById('tableBody').innerHTML = allData.map((r, i) => {
-                // Ensure arrays don't break if parsed strangely
                 const filesList = Array.isArray(r.file_urls) ? r.file_urls : [];
                 
-                // Build links for each dynamic file in the array
-                const linksHtml = filesList.map((url, idx) => `
-                    <a href="${url}" target="_blank" class="btn-view-file">📄 View Attachment #${idx + 1}</a>
-                `).join('');
+                // Matches the uploaded URL to its specific file label name
+                const linksHtml = filesList.map((url, idx) => {
+                    const label = r.course_labels[idx] || `Attachment #${idx + 1}`;
+                    return `<a href="${url}" target="_blank" class="btn-view-file" title="${label}">📄 View ${label}</a>`;
+                }).join('');
 
                 return `
                     <tr>
@@ -121,7 +121,7 @@
                         <td>${r.institution}</td>
                         <td><span class="course-badge">${r.course_name}</span></td>
                         <td>${r.course_date}</td>
-                        <td><div class="files-container">${linksHtml || 'No files found'}</div></td>
+                        <td><div class="files-container">${linksHtml || 'No files uploaded'}</div></td>
                         <td>
                             <button class="btn-delete" onclick="handleDeleteRegistration(${r.id}, ${r.course_id}, '${r.staff_name.replace(/'/g, "\\'")}')">
                                 ❌ Remove
