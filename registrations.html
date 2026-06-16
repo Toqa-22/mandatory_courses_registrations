@@ -156,10 +156,12 @@
                     }
                 }
 
-                // 3. Delete Entry Log Row
+                // 3. Delete Entry Log Row and AWAIT the completion before reloading view
                 await client.from('registrations').delete().eq('id', regId);
                 alert("Record removed successfully.");
-                loadData();
+                
+                // Reload interface sequence cleanly
+                await loadData();
             } catch (err) {
                 alert("Error during restoration sequence processing: " + err.message);
             }
