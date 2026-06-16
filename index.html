@@ -69,8 +69,8 @@
                     </div>
                     <div class="form-group">
                         <label>Names of Files Needed</label>
-                        <input type="text" id="fileLabelsInput" placeholder="e.g., ID Card, Work Certificate, Passport Picture" required>
-                        <span class="input-hint">Separate individual specific requests by commas. The count of items determines total documents needed.</span>
+                        <input type="text" id="fileLabelsInput" placeholder="e.g., ID Card, Work Certificate" required>
+                        <span class="input-hint">Separate individual requests by commas. The list items decide total items needed.</span>
                     </div>
                     <button type="submit" class="btn-submit" id="submitBtn">Save Course Setup</button>
                 </form>
@@ -109,7 +109,7 @@
             if (error) return console.error(error);
 
             document.getElementById('courseTableBody').innerHTML = data.map(c => {
-                const labels = Array.isArray(c.file_labels) ? c.file_labels : ["Required Document"];
+                const labels = Array.isArray(c.file_labels) && c.file_labels.length > 0 ? c.file_labels : ["Required Document"];
                 const labelsHtml = labels.map((l, idx) => `<span class="label-item">${idx + 1}. ${l}</span>`).join('');
 
                 return `
@@ -134,21 +134,17 @@
             const course_date = document.getElementById('courseDate').value;
             const seats = Number(document.getElementById('courseSeats').value);
             
-            // Clean up comma separated input values into a clean array structure
             const file_labels = document.getElementById('fileLabelsInput').value
                 .split(',')
                 .map(item => item.trim())
                 .filter(item => item.length > 0);
 
-            if (file_labels.length === 0) {
-                alert("Please add at least one specified document name.");
-                return;
-            }
+            const finalLabels = file_labels.length > 0 ? file_labels : ["Required Document"];
 
             if (id) {
-                await client.from('courses').update({ name, course_date, seats, file_labels }).eq('id', id);
+                await client.from('courses').update({ name, course_date, seats, file_labels: finalLabels }).eq('id', id);
             } else {
-                await client.from('courses').insert({ name, course_date, seats, file_labels });
+                await client.from('courses').insert({ name, course_date, seats, file_labels: finalLabels });
             }
 
             form.reset();
@@ -163,7 +159,7 @@
             document.getElementById('courseName').value = name;
             document.getElementById('courseDate').value = date;
             document.getElementById('courseSeats').value = seats;
-            document.getElementById('fileLabelsInput').value = labelsString;
+            document.getElementById('fileLabelsInput').value = labelsString || "Required Document";
             document.getElementById('formTitle').innerText = "Modify Course #" + id;
             document.getElementById('submitBtn').innerText = "Apply Updates";
         };
