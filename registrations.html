@@ -135,21 +135,28 @@
             if (!confirm(`Are you sure you want to remove the registration for "${staffName}"?\n\nThis restores course chairs availability (+1) and frees up institutional quota open slots.`)) return;
 
             try {
-                // Restore Course Chairs Counter Allocation
+                // 1. Restore Course Chairs Counter Allocation (+1 Seat back to room)
                 const { data: courseData } = await client.from('courses').select('seats').eq('id', courseId).single();
                 if (courseData) {
                     await client.from('courses').update({ seats: courseData.seats + 1 }).eq('id', courseId);
                 }
                 
-                // Decrement Quota Pool counter of origin Institution
-                if (instId) {
-                    const { data: instData } = await client.from('institutions').select('registered_count').eq('id', instId).single();
-                    if (instData && instData.registered_count > 0) {
-                        await client.from('institutions').update({ registered_count: instData.registered_count - 1 }).eq('id', instId);
+                // 2. Decrement Quota Counter from the course_institutions intersection room map row
+                if (courseId && instId) {
+                    const { data: mapData } = await client.from('course_institutions')
+                        .select('id, registered_count')
+                        .eq('course_id', courseId)
+                        .eq('institution_id', instId)
+                        .maybeSingle();
+
+                    if (mapData && mapData.registered_count > 0) {
+                        await client.from('course_institutions')
+                            .update({ registered_count: mapData.registered_count - 1 })
+                            .eq('id', mapData.id);
                     }
                 }
 
-                // Delete Entry Log Row
+                // 3. Delete Entry Log Row
                 await client.from('registrations').delete().eq('id', regId);
                 alert("Record removed successfully.");
                 loadData();
