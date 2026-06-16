@@ -111,17 +111,23 @@
 
         <div class="main-grid">
             <div class="card">
-                <h2>Add Allowed Institution</h2>
+                <h2>Assign Institution Quota to Course Room</h2>
                 <form id="instForm">
+                    <div class="form-group">
+                        <label>Target Course Room Scope</label>
+                        <select id="allocCourseSelect" required>
+                            <option value="">-- Choose Course Room --</option>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label>Institution Official Name</label>
                         <input type="text" id="instName" placeholder="e.g., City Medical General Hospital" required>
                     </div>
                     <div class="form-group">
-                        <label>Allowed Registration Limit (Quota)</label>
+                        <label>Allowed Registration Limit (Quota For This Course Only)</label>
                         <input type="number" id="instMaxSlots" placeholder="e.g., 5" min="1" required>
                     </div>
-                    <button type="submit" class="btn-submit">Add Institution to Pool</button>
+                    <button type="submit" class="btn-submit">Authorize Single Rule Allocation</button>
                 </form>
             </div>
 
@@ -130,10 +136,11 @@
                 <table>
                     <thead>
                         <tr>
+                            <th>Course Scope</th>
                             <th>Institution Name</th>
-                            <th>Registration Cap Limit</th>
-                            <th>Current Signups</th>
-                            <th>Status Status</th>
+                            <th>Max Allowed</th>
+                            <th>Filled Slots</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -192,26 +199,39 @@
                     </tr>
                 `;
             }).join('');
+            
+            // Trigger an auto-refresh for the lower dropdown component as well
+            fetchInstitutions();
         }
 
         async function fetchInstitutions() {
-            const { data, error } = await client.from('institutions').select('*').order('id', { ascending: true });
+            // Populate the target course selection dropdown menu
+            const { data: currentCourses } = await client.from('courses').select('id, name').order('id', { ascending: true });
+            document.getElementById('allocCourseSelect').innerHTML = '<option value="">-- Choose Course Room --</option>' + 
+                (currentCourses || []).map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+            // Fetch rules context directly from the relational bridging schema layout map
+            const { data, error } = await client.from('course_institutions').select(`
+                id, max_slots, registered_count,
+                courses(name), institutions(name)
+            `);
             if (error) return console.error(error);
 
-            document.getElementById('instTableBody').innerHTML = data.map(i => {
-                const isFull = i.registered_count >= i.max_slots;
+            document.getElementById('instTableBody').innerHTML = (data || []).map(m => {
+                const isFull = m.registered_count >= m.max_slots;
                 const statusBadge = isFull 
-                    ? `<span class="badge-danger">Full (Hidden)</span>` 
-                    : `<span class="badge-alt">Active (${i.max_slots - i.registered_count} open)</span>`;
+                    ? `<span class="badge-danger">Full</span>` 
+                    : `<span class="badge-alt">Available</span>`;
 
                 return `
                     <tr>
-                        <td><b>${i.name}</b></td>
-                        <td><span class="badge">${i.max_slots} maximum users</span></td>
-                        <td><b>${i.registered_count}</b> filled</td>
+                        <td><small class="badge">${m.courses?.name || 'Deleted Course Scope'}</small></td>
+                        <td><b>${m.institutions?.name || 'Deleted Institution'}</b></td>
+                        <td><span class="badge">${m.max_slots} maximum slots</span></td>
+                        <td><b>${m.registered_count}</b> utilized</td>
                         <td>${statusBadge}</td>
                         <td>
-                            <button class="btn-action btn-del" onclick="deleteInstitution(${i.id})">Remove</button>
+                            <button class="btn-action btn-del" onclick="deleteInstitution(${m.id})">Drop Rule</button>
                         </td>
                     </tr>
                 `;
@@ -253,12 +273,29 @@
 
         instForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const name = document.getElementById('instName').value.trim();
+            const course_id = Number(document.getElementById('allocCourseSelect').value);
+            const instName = document.getElementById('instName').value.trim();
             const max_slots = Number(document.getElementById('instMaxSlots').value);
 
-            const { error } = await client.from('institutions').insert({ name, max_slots });
+            if (!course_id) return alert("Please specify a target course room scope.");
+
+            // Verify or dynamically generate baseline core company reference record
+            let { data: inst } = await client.from('institutions').select('id').eq('name', instName).maybeSingle();
+            if (!inst) {
+                const { data: newInst, error: insErr } = await client.from('institutions').insert({ name: instName }).select().single();
+                if (insErr) return alert("Error processing global token row: " + insErr.message);
+                inst = newInst;
+            }
+
+            // Map configuration limits securely into the junction matrix table containers
+            const { error } = await client.from('course_institutions').insert({
+                course_id,
+                institution_id: inst.id,
+                max_slots
+            });
+
             if (error) {
-                alert("Error adding institution: " + error.message);
+                alert("Conflict: This specific allocation assignment rule is already registered.");
             } else {
                 instForm.reset();
                 fetchInstitutions();
@@ -286,14 +323,13 @@
         };
 
         window.deleteInstitution = async function(id) {
-            if (!confirm("Remove this institution configuration? Existing logs will maintain text reference name fallback values.")) return;
-            await client.from('institutions').delete().eq('id', id);
+            if (!confirm("Drop this isolated institution course quota rule mapping configuration?")) return;
+            await client.from('course_institutions').delete().eq('id', id);
             fetchInstitutions();
         };
 
         generateDescriptionInputs();
         fetchCourses();
-        fetchInstitutions();
     </script>
 </body>
 </html>
