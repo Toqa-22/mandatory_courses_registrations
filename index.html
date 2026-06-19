@@ -41,10 +41,16 @@
         .btn-tbl-edit { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .btn-tbl-delete { background: #fff5f5; color: #e53e3e; border: 1px solid #fed7d7; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
         
+        /* New Custom Allocation Engine Elements */
+        .allocation-controls { display: flex; gap: 10px; margin-bottom: 12px; }
+        .allocation-bulk-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .allocation-bulk-row input { flex: 1; }
+        .allocation-bulk-row button { white-space: nowrap; font-size: 13px; }
         .allocation-container { max-height: 200px; overflow-y: auto; border: 1px solid #d1d5db; border-radius: 12px; padding: 10px; background: white; }
         .allocation-item { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #e2e8f0; }
         .allocation-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
-        .allocation-item label { font-size: 13px; color: #334155; display: flex; align-items: center; gap: 6px; width: 60%; }
+        .allocation-item.hidden-element { display: none !important; }
+        .allocation-item label { font-size: 13px; color: #334155; display: flex; align-items: center; gap: 6px; width: 60%; cursor: pointer; }
         .allocation-item input[type="number"] { width: 35%; padding: 6px; font-size: 13px; border-radius: 6px; }
     </style>
 </head>
@@ -55,7 +61,6 @@
         <p class="subtitle">Update configuration frameworks, structure labels, check seat arrays, and setup parameters.</p>
 
         <div class="grid-panel">
-            <!-- COURSE OPERATION MANAGER MODULE -->
             <div class="card-box">
                 <h2 id="formPanelTitle">Create New Managed Course</h2>
                 <button id="cancelEditBtn" class="btn-cancel style-chosen hidden-element">Cancel Edit Operational Mode</button>
@@ -81,16 +86,33 @@
 
                     <div class="array-group-box">
                         <h4 style="margin-bottom: 10px; color:#334155;">Institutional Allocations / Chair Mapping</h4>
-                        <div class="allocation-container" id="allocationWrapper">
-                            <!-- Injected programmatically by script execution loop -->
+                        
+                        <div class="allocation-controls">
+                            <select id="allocationFilterSelect" style="padding: 10px; font-size: 13px;">
+                                <option value="ALL">Show All Options</option>
+                                <option value="IBRA">Ibra Departments Only</option>
+                                <option value="OTHER">Other Institutions Only</option>
+                            </select>
+                            <select id="allocationBulkSelectAction" style="padding: 10px; font-size: 13px;">
+                                <option value="">-- Bulk Select Toggles --</option>
+                                <option value="ALL">Select All Visible</option>
+                                <option value="NONE">Deselect All Visible</option>
+                            </select>
                         </div>
+
+                        <div class="allocation-bulk-row">
+                            <input type="number" id="bulkSeatsCountInput" placeholder="Bulk Chairs Value (e.g. 3)" min="0" style="padding: 10px; font-size: 13px;">
+                            <button type="button" class="btn-action btn-add" id="applyBulkSeatsBtn">Apply Bulk Seats</button>
+                        </div>
+
+                        <div class="allocation-container" id="allocationWrapper">
+                            </div>
                     </div>
 
                     <button type="submit" class="btn-primary-action" id="submitFormBtn">Push Action Configuration</button>
                 </form>
             </div>
 
-            <!-- REGISTRATIONS VIEWER -->
             <div class="card-box" style="display: flex; flex-direction: column;">
                 <h2>Live Transaction Registration Records</h2>
                 <div style="flex: 1; overflow-y: auto; max-height: 520px;" id="liveLogsContainer">
@@ -99,7 +121,6 @@
             </div>
         </div>
 
-        <!-- MAIN ACTIVE DISPLAY DATAGRID MATRIX -->
         <div class="list-table-container">
             <h2>Active Monitored Courses Array</h2>
             <div style="overflow-x: auto; margin-top: 20px;">
@@ -129,7 +150,7 @@
 
         const client = createClient(
             "https://pqgkdnxdsybcfamwadrf.supabase.co",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxZ2tkbnhkc3liY2ZhbXdhZHJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3IDE1MzE0NjUsImV4cCI6MjA5NzEwNzQ2NX0.lugWuqNI5VMy6hCn-y38-hi825pIHcUjOCAWCsMJz4c"
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxZ2tkbnhkc3liY2ZhbXdhZHJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTUzMTQ2NiwiZXhwIjoyMDk3MTA3NDY1fQ.lugWuqNI5VMy6hCn-y38-hi825pIHcUjOCAWCsMJz4c"
         );
 
         let editingCourseId = null;
@@ -183,8 +204,12 @@
                 const match = currentMap.find(m => m.institution_id === inst.id);
                 const defaultSlots = match ? match.max_slots : (inst.name.startsWith("Ibra - ") ? 3 : 1);
                 const checkedStatus = match || currentMap.length === 0 ? 'checked' : '';
+                
+                // Track classification types for programmatic filtering
+                const categoryType = inst.name.startsWith("Ibra - ") ? "IBRA" : "OTHER";
+
                 return `
-                    <div class="allocation-item">
+                    <div class="allocation-item" data-category="${categoryType}" data-id="${inst.id}">
                         <label>
                             <input type="checkbox" class="inst-checkbox-target" data-id="${inst.id}" ${checkedStatus}>
                             <span>${inst.name}</span>
@@ -193,6 +218,59 @@
                     </div>
                 `;
             }).join('');
+            
+            applyAllocationFilter();
+        }
+
+        function applyAllocationFilter() {
+            const filterVal = document.getElementById('allocationFilterSelect').value;
+            const items = document.querySelectorAll('.allocation-item');
+            
+            items.forEach(item => {
+                const cat = item.getAttribute('data-category');
+                if (filterVal === 'ALL' || filterVal === cat) {
+                    item.classList.remove('hidden-element');
+                } else {
+                    item.classList.add('hidden-element');
+                }
+            });
+        }
+
+        function handleBulkSelectionToggle() {
+            const selectAction = document.getElementById('allocationBulkSelectAction').value;
+            if (!selectAction) return;
+
+            const visibleItems = document.querySelectorAll('.allocation-item:not(.hidden-element)');
+            visibleItems.forEach(item => {
+                const checkbox = item.querySelector('.inst-checkbox-target');
+                if (checkbox) {
+                    checkbox.checked = (selectAction === 'ALL');
+                }
+            });
+            document.getElementById('allocationBulkSelectAction').value = ""; 
+        }
+
+        function handleBulkSeatsOverride() {
+            const bulkValueString = document.getElementById('bulkSeatsCountInput').value;
+            if (bulkValueString === "") {
+                alert("Please input a valid chair mapping count capacity first.");
+                return;
+            }
+            const seatCount = parseInt(bulkValueString, 10);
+            
+            const visibleCheckedItems = document.querySelectorAll('.allocation-item:not(.hidden-element)');
+            let directCount = 0;
+
+            visibleCheckedItems.forEach(item => {
+                const checkbox = item.querySelector('.inst-checkbox-target');
+                const slotsInput = item.querySelector('.inst-slots-target');
+                if (checkbox && checkbox.checked && slotsInput) {
+                    slotsInput.value = seatCount;
+                    directCount++;
+                }
+            });
+
+            alert(`Successfully updated localized seats to ${seatCount} for ${directCount} chosen institutions.`);
         }
 
         async function reloadAdminConsoleDashboard() {
@@ -229,7 +307,6 @@
                 document.querySelectorAll('.btn-tbl-delete').forEach(b => b.addEventListener('click', () => deleteTargetCourseTrack(b.getAttribute('data-id'))));
             }
 
-            // Fetch and match registrations page structure + gender display
             const { data: logs } = await client.from('registrations').select('*').order('created_at', { ascending: false });
             const logsContainer = document.getElementById('liveLogsContainer');
             if (!logs || logs.length === 0) {
@@ -279,6 +356,8 @@
             document.getElementById('cancelEditBtn').classList.add('hidden-element');
             document.getElementById('courseConfigForm').reset();
             document.getElementById('fileArrayWrapper').innerHTML = '';
+            document.getElementById('bulkSeatsCountInput').value = '';
+            document.getElementById('allocationFilterSelect').value = 'ALL';
             pushFileRuleInputRow('Required Document', '');
             renderAllocationMappingFramework([]);
         }
@@ -378,6 +457,11 @@
         document.getElementById('addFileRuleRowBtn').addEventListener('click', () => pushFileRuleInputRow('', ''));
         document.getElementById('cancelEditBtn').addEventListener('click', exitEditOperationalMode);
         document.getElementById('courseConfigForm').addEventListener('submit', handleFormSubmission);
+        
+        // Link Allocation Interactive Engine Action Triggers
+        document.getElementById('allocationFilterSelect').addEventListener('change', applyAllocationFilter);
+        document.getElementById('allocationBulkSelectAction').addEventListener('change', handleBulkSelectionToggle);
+        document.getElementById('applyBulkSeatsBtn').addEventListener('click', handleBulkSeatsOverride);
 
         (async function init() {
             await seedAndFetchMasterInstitutions();
