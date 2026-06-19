@@ -214,13 +214,14 @@
             container.innerHTML = globalInstitutionsList.map(inst => {
                 const match = currentMap.find(m => m.institution_id === inst.id);
                 const defaultSlots = match ? match.max_slots : (inst.name.startsWith("Ibra - ") ? 3 : 1);
+                const currentCount = match ? match.registered_count : 0;
                 const checkedStatus = match || currentMap.length === 0 ? 'checked' : '';
                 const categoryType = inst.name.startsWith("Ibra - ") ? "IBRA" : "OTHER";
 
                 return `
                     <div class="allocation-item" data-category="${categoryType}" data-id="${inst.id}">
                         <label>
-                            <input type="checkbox" class="inst-checkbox-target" data-id="${inst.id}" ${checkedStatus}>
+                            <input type="checkbox" class="inst-checkbox-target" data-id="${inst.id}" data-current-count="${currentCount}" ${checkedStatus}>
                             <span>${inst.name}</span>
                         </label>
                         <input type="number" class="inst-slots-target" data-id="${inst.id}" min="0" placeholder="Cap" value="${defaultSlots}">
@@ -444,13 +445,15 @@
             checkboxes.forEach(chk => {
                 if (chk.checked) {
                     const instId = Number(chk.getAttribute('data-id'));
+                    const currentCount = parseInt(chk.getAttribute('data-current-count'), 10) || 0;
                     const slotsInput = document.querySelector(`.inst-slots-target[data-id="${instId}"]`);
                     const max_slots = slotsInput ? parseInt(slotsInput.value, 10) || 1 : 1;
+                    
                     allocationRows.push({
                         course_id: courseId,
                         institution_id: instId,
                         max_slots: max_slots,
-                        registered_count: 0
+                        registered_count: currentCount
                     });
                 }
             });
