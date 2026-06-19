@@ -10,7 +10,7 @@
         .container { max-width: 1200px; margin: auto; }
         .title { text-align: center; font-size: 50px; color: #0f172a; margin-bottom: 15px; }
         .subtitle { text-align: center; color: #64748b; margin-bottom: 40px; }
-        .grid-panel { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 30px; margin-bottom: 40px; }
+        .grid-panel { display: grid; grid-template-columns: 1fr; gap: 30px; margin-bottom: 40px; }
         .card-box { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, .08); display: flex; flex-direction: column; }
         .card-box h2 { margin-bottom: 25px; color: #0f172a; font-size: 24px; display: flex; justify-content: space-between; align-items: center; }
         .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
@@ -29,9 +29,6 @@
         
         .btn-primary-action { width: 100%; padding: 16px; background: linear-gradient(90deg, #2563eb, #7c3aed); border: none; color: white; font-size: 16px; border-radius: 12px; cursor: pointer; font-weight: bold; }
         .btn-cancel { background: #e2e8f0; color: #334155; margin-bottom: 15px; width: 100%; padding: 12px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; }
-
-        .btn-link-records { display: inline-block; padding: 8px 16px; background: #2563eb; color: white; text-decoration: none; border-radius: 10px; font-size: 13px; font-weight: bold; transition: 0.2s; }
-        .btn-link-records:hover { background: #1d4ed8; }
 
         .list-table-container { background: white; border-radius: 30px; padding: 40px; box-shadow: 0 10px 30px rgba(0, 0, 0, .08); overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
@@ -116,16 +113,6 @@
 
                     <button type="submit" class="btn-primary-action" id="submitFormBtn">Push Action Configuration</button>
                 </form>
-            </div>
-
-            <div class="card-box">
-                <h2>
-                    <span>Live Transaction Records</span>
-                    <a href="registrations.html" class="btn-link-records">View Page ↗</a>
-                </h2>
-                <div style="flex: 1; overflow-y: auto; max-height: 520px;" id="liveLogsContainer">
-                    <div style="color: #64748b; padding: 10px;">Awaiting active real-time queries...</div>
-                </div>
             </div>
         </div>
 
@@ -332,34 +319,6 @@
 
                 document.querySelectorAll('.btn-tbl-edit').forEach(b => b.addEventListener('click', () => triggerEditOperationalMode(b.getAttribute('data-id'))));
                 document.querySelectorAll('.btn-tbl-delete').forEach(b => b.addEventListener('click', () => deleteTargetCourseTrack(b.getAttribute('data-id'))));
-            }
-
-            const { data: logs } = await client.from('registrations').select('*').order('created_at', { ascending: false });
-            const logsContainer = document.getElementById('liveLogsContainer');
-            if (!logs || logs.length === 0) {
-                logsContainer.innerHTML = `<div style="color:#64748b; padding:10px;">Zero verified logs mapped.</div>`;
-            } else {
-                logsContainer.innerHTML = logs.map(l => {
-                    let urlsArray = [];
-                    if (Array.isArray(l.file_urls)) {
-                        urlsArray = l.file_urls;
-                    } else if (typeof l.file_urls === 'string') {
-                        try { urlsArray = JSON.parse(l.file_urls); } catch(e) { urlsArray = []; }
-                    }
-                    if (!Array.isArray(urlsArray)) urlsArray = [];
-
-                    return `
-                        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:15px; margin-bottom:10px; font-size:13px; line-height:1.5;">
-                            <div style="font-weight:bold; color:#0f172a; margin-bottom:4px;">${l.staff_name || 'Unknown'} (${l.staff_number || 'N/A'})</div>
-                            <div style="color:#475569;">Facility Snapshot: <b>${l.institution_name_snapshot || 'N/A'}</b></div>
-                            <div style="color:#64748b;">Phone Target: ${l.phone_number || 'N/A'} | Designation: <b>${l.designation_snapshot || 'N/A'}</b> | Specialization: ${l.specialization_snapshot || 'General'}</div>
-                            <div style="color:#64748b; margin-top:2px;">Sex: <span class="badge-info" style="background:#eff6ff; color:#2563eb; font-size:11px;">${l.sex || 'N/A'}</span></div>
-                            <div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:4px;">
-                                ${urlsArray.map((url, i) => `<a href="${url}" target="_blank" class="badge-info" style="background:#eff6ff; color:#2563eb; text-decoration:none;">Doc #${i+1} Link ↗</a>`).join('')}
-                            </div>
-                        </div>
-                    `;
-                }).join('');
             }
         }
 
