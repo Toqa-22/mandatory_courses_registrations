@@ -3,373 +3,432 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Course Management Dashboard</title>
+    <title>Course Management System Dashboard</title>
     <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --background: #f8fafc;
-            --surface: #ffffff;
-            --text: #0f172a;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --danger: #dc2626;
-            --success: #16a34a;
+        /* New Button Group Styles */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
         }
-
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background-color: var(--background);
-            color: var(--text);
-            margin: 0;
-            padding: 24px;
-        }
-
-        .dashboard-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 24px;
-        }
-
-        @media (min-width: 992px) {
-            .dashboard-container {
-                grid-template-columns: 1fr 2fr;
-            }
-        }
-
-        .panel {
-            background: var(--surface);
-            border: 1px solid var(--border);
+        
+        .btn-flex {
+            flex: 1;
+            padding: 16px;
+            font-size: 16px;
             border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+            transition: 0.3s;
         }
-
-        h2, h3 {
-            margin-top: 0;
-            font-weight: 600;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 6px;
-            font-size: 14px;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        input[type="date"],
-        select {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-
-        .btn {
-            background: var(--primary);
+        
+        /* Primary Button (Full Color) */
+        .btn-primary-action {
+            background: linear-gradient(90deg, #2563eb, #7c3aed);
             color: white;
             border: none;
-            padding: 10px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 14px;
         }
-
-        .btn:hover { background: var(--primary-hover); }
-
+        
+        .btn-primary-action:hover {
+            filter: brightness(1.1);
+        }
+        
+        /* Secondary Button (Border Only) */
         .btn-secondary {
-            background: #e2e8f0;
-            color: #334155;
-            margin-left: 8px;
+            background: white;
+            color: #2563eb;
+            border: 2px solid #2563eb;
         }
-        .btn-secondary:hover { background: #cbd5e1; }
-
-        .hidden-element { display: none !important; }
-
-        .allocation-container-box {
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 12px;
-            max-height: 250px;
-            overflow-y: auto;
-            margin-top: 10px;
+        
+        .btn-secondary:hover {
+            background: #eff6ff;
+        }
+        .nav-buttons{
+            display:flex;
+            justify-content:center;
+            margin:25px 0 40px;
+        }
+        
+        .btn-nav{
+            display:inline-flex;
+            align-items:center;
+            gap:10px;
+            padding:15px 35px;
+            background:linear-gradient(135deg,#2563eb,#7c3aed);
+            color:#fff;
+            text-decoration:none;
+            font-size:17px;
+            font-weight:bold;
+            border-radius:50px;
+            box-shadow:0 8px 20px rgba(37,99,235,.25);
+            transition:all .3s ease;
+        }
+        
+        .btn-nav:hover{
+            transform:translateY(-4px);
+            box-shadow:0 14px 30px rgba(37,99,235,.35);
+            background:linear-gradient(135deg,#1d4ed8,#6d28d9);
+        }
+        
+        .btn-nav:active{
+            transform:scale(.97);
+        }
+        
+        .btn-nav::after{
+            content:"→";
+            font-size:18px;
+            transition:transform .3s;
+        }
+        
+        .btn-nav:hover::after{
+            transform:translateX(6px);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif;
+        }
+        body { background: #f4f7fc; min-height: 100vh; padding: 40px 20px;
+        }
+        .container { max-width: 1200px; margin: auto;
+        }
+        .title { text-align: center; font-size: 50px; color: #0f172a; margin-bottom: 15px;
+        }
+        .subtitle { text-align: center; color: #64748b; margin-bottom: 40px;
+        }
+        .grid-panel { display: grid; grid-template-columns: 1fr; gap: 30px; margin-bottom: 40px;
+        }
+        .card-box { background: white; padding: 40px; border-radius: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, .08); display: flex; flex-direction: column;
+        }
+        .card-box h2 { margin-bottom: 25px; color: #0f172a; font-size: 24px; display: flex;
+        justify-content: space-between; align-items: center; }
+        .input-row { display: grid; grid-template-columns: 1fr 1fr;
+        gap: 15px; margin-bottom: 15px; }
+        input, select { width: 100%; padding: 14px;
+        border: 1px solid #d1d5db; border-radius: 12px; font-size: 15px; background-color: white;
+        }
+        input:focus, select:focus { outline: none; border-color: #2563eb;
+        }
+        .full-width { grid-column: 1 / -1;
+        }
+        
+        .array-group-box { background: #f8fafc;
+        border: 1px solid #e2e8f0; padding: 20px; border-radius: 15px; margin-bottom: 15px;
+        }
+        .array-item-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center;
+        }
+        
+        .btn-action { padding: 12px 20px;
+        border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s;
+        }
+        .btn-add { background: #eff6ff; color: #2563eb;
+        }
+        .btn-add:hover { background: #dbeafe;
+        }
+        .btn-remove { background: #fef2f2; color: #dc2626; padding: 14px; border-radius: 12px; border: none;
+        cursor: pointer; }
+        .btn-remove:hover { background: #fee2e2;
+        }
+        
+        .btn-cancel { background: #e2e8f0;
+        color: #334155; margin-bottom: 15px; width: 100%; padding: 12px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold;
         }
 
-        .allocation-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px;
-            border-bottom: 1px solid var(--border);
+        .list-table-container { background: white; border-radius: 30px; padding: 40px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, .08); overflow-x: auto;
+        }
+        table { width: 100%; border-collapse: collapse; text-align: left;
+        }
+        th, td { padding: 16px; border-bottom: 1px solid #e2e8f0; font-size: 15px;
+        }
+        th { color: #475569; font-weight: bold; background: #f8fafc;
+        }
+        td { color: #0f172a;
+        }
+        
+        .badge-info { display: inline-block;
+        padding: 4px 10px; background: #f1f5f9; border-radius: 6px; font-size: 12px; font-weight: bold; margin: 2px; color: #475569;
+        }
+        .action-cell { display: flex; gap: 8px;
+        }
+        .btn-tbl-edit { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0;
+        padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-tbl-edit:hover { background: #dcfce7;
+        }
+        .btn-tbl-delete { background: #fff5f5; color: #e53e3e; border: 1px solid #fed7d7;
+        padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-tbl-delete:hover { background: #fee2e2;
+        }
+        
+        .allocation-controls { display: flex;
+        gap: 10px; margin-bottom: 12px; }
+        .allocation-bulk-row { display: flex; gap: 10px; margin-bottom: 15px;
+        }
+        .allocation-bulk-row input { flex: 1;
+        }
+        .allocation-bulk-row button { white-space: nowrap; font-size: 13px;
+        }
+        .allocation-container { max-height: 200px; overflow-y: auto; border: 1px solid #d1d5db; border-radius: 12px;
+        padding: 10px; background: white; }
+        .allocation-item { display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #e2e8f0; }
+        .allocation-item:last-child { margin-bottom: 0;
+        padding-bottom: 0; border-bottom: none; }
+        .allocation-item.hidden-element { display: none !important;
+        }
+        .allocation-item label { font-size: 13px; color: #334155; display: flex; align-items: center;
+        gap: 6px; width: 60%; cursor: pointer; }
+        .allocation-item input[type="number"] { width: 35%;
+        padding: 6px; font-size: 13px; border-radius: 6px; }
+        
+        .designation-grid { display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 10px; }
+        .designation-item { display: flex;
+        align-items: center; gap: 6px; font-size: 14px; color: #334155; cursor: pointer;
+        }
+        .designation-item input { width: auto; margin: 0; cursor: pointer;
         }
 
-        .allocation-item:last-child { border-bottom: none; }
-
-        .allocation-item label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 0;
-            cursor: pointer;
-        }
-
-        .allocation-item input[type="number"] {
-            width: 80px;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 14px;
-        }
-
-        th, td {
-            padding: 12px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        th {
-            background: #f1f5f9;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        .badge-info {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 500;
-            background: #e0f2fe;
-            color: #0369a1;
-        }
-
-        .action-cell {
-            display: flex;
-            gap: 6px;
-        }
-
-        .btn-tbl-edit {
-            background: #f1f5f9;
-            border: 1px solid var(--border);
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .btn-tbl-edit:hover { background: #e2e8f0; }
-
-        .btn-tbl-delete {
-            background: #fef2f2;
-            border: 1px solid #fca5a5;
-            color: var(--danger);
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .btn-tbl-delete:hover { background: #fee2e2; }
-
-        .bulk-controls, .file-rule-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 10px;
-            align-items: center;
+        .hidden-element { display: none !important;
         }
     </style>
 </head>
 <body>
 
-    <div class="dashboard-container">
+    <div class="container">
+        <h1 class="title">Course Management System Dashboard</h1>
+        <p class="subtitle">Update configuration frameworks, structure labels, check seat arrays, and setup parameters.</p>
+
+        <div class="nav-buttons">
+            <a class="btn-nav" href="registrations.html">
+                📋 Registration Table
+            </a>
+       
+        </div>
         
-        <div class="panel">
-            <h3 id="formPanelTitle">Create New Managed Course</h3>
-            <form id="courseConfigForm">
-                <div class="form-group">
-                    <label for="courseName">Course Title Name</label>
-                    <input type="text" id="courseName" required placeholder="e.g., Advanced Emergency Trauma Workshop">
-                </div>
+        <div class="grid-panel">
+            <div class="card-box">
+                <h2 id="formPanelTitle">Create New Managed Course</h2>
+                <button id="cancelEditBtn" class="btn-cancel style-chosen hidden-element">Cancel Edit Operational Mode</button>
+                <form id="courseConfigForm">
+         
+                    <div class="input-row">
+                        <input type="text" id="courseName" placeholder="Course Name (e.g. BLS)" required>
+                        <input type="date" id="courseDate" required>
+                    </div>
+          
+                    <div class="input-row">
+                        <input type="number" id="courseSeats" placeholder="Chairs Limit (e.g. 5)" min="0" required>
+                        <select id="courseGender" required>
+                            <option value="Both">Target Sex: Both</option>
+                            <option value="Male">Male Only</option>
+           
+                            <option value="Female">Female Only</option>
+                        </select>
+                    </div>
 
-                <div class="form-group">
-                    <label for="courseDate">Event Schedule Date</label>
-                    <input type="date" id="courseDate" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="courseSeats">Global Maximum Capacity Seats</label>
-                    <input type="number" id="courseSeats" min="0" required placeholder="e.g., 50">
-                </div>
-
-                <div class="form-group">
-                    <label for="courseGender">Allowed Sex Restrictions</label>
-                    <select id="courseGender">
-                        <option value="Both">Both (No Restrictions)</option>
-                        <option value="Male">Male Only</option>
-                        <option value="Female">Female Only</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="designationModeSelect">Target Designation Roles</label>
-                    <select id="designationModeSelect">
-                        <option value="All">All Registered Professionals</option>
-                        <option value="Custom">Custom Criteria Rules Selection</option>
-                    </select>
-                </div>
-
-                <div id="customDesignationsBox" class="form-group hidden-element" style="border: 1px solid var(--border); padding: 10px; border-radius: 6px;">
-                    <label><input type="checkbox" class="desig-checkbox" value="Doctor"> Doctor</label>
-                    <label><input type="checkbox" class="desig-checkbox" value="Nurse"> Nurse</label>
-                    <label><input type="checkbox" class="desig-checkbox" value="Paramedic"> Paramedic</label>
-                    <label><input type="checkbox" class="desig-checkbox" value="Technician"> Technician</label>
-                </div>
-
-                <div class="form-group">
-                    <label for="documentRequirementSelect">Require Verification Files Upload?</label>
-                    <select id="documentRequirementSelect">
-                        <option value="No">No Document Files Requested</option>
-                        <option value="Yes">Yes, Require Rule Checks</option>
-                    </select>
-                </div>
-
-                <div id="documentRulesConfigContainer" class="form-group hidden-element">
-                    <label>Configured Rules Check List</label>
-                    <div id="fileArrayWrapper"></div>
-                    <button type="button" class="btn btn-secondary" id="addFileRuleRowBtn" style="margin: 5px 0 0 0; padding: 4px 8px; font-size: 12px;">+ Add Additional Row</button>
-                </div>
-
-                <hr style="border:0; border-top: 1px solid var(--border); margin: 20px 0;">
-
-                <h4>Target Allocation Matrix Setup</h4>
+                    <div class="array-group-box">
                 
-                <div class="bulk-controls">
-                    <select id="allocationFilterSelect">
-                        <option value="ALL">Show All Categories</option>
-                        <option value="IBRA">Ibra System Nodes Only</option>
-                        <option value="OTHER">Other Entities Only</option>
-                    </select>
-                    <select id="allocationBulkSelectAction">
-                        <option value="">Bulk Select...</option>
-                        <option value="ALL">Check All Filtered</option>
-                        <option value="NONE">Uncheck All Filtered</option>
-                    </select>
-                </div>
+                        <h4 style="margin-bottom: 5px; color:#334155;">Target Designations</h4>
+                        <select id="designationModeSelect" style="margin-bottom: 10px;" required>
+                            <option value="All">All Designations Allowed</option>
+                            <option value="Custom">Choose Specific Designations...</option>
+         
+                        </select>
+                        <div id="customDesignationsBox" class="hidden-element" style="background: white; border: 1px solid #d1d5db; border-radius: 12px; padding: 15px;">
+                            <p style="font-size: 13px; color: #64748b; margin-bottom: 10px;">Target designation:</p>
+                            <div class="designation-grid">
+                                <label class="designation-item"><input type="checkbox" class="desig-checkbox" value="Nurse"> Nurse</label>
+                              
+                                <label class="designation-item"><input type="checkbox" class="desig-checkbox" value="Physician"> Physician</label>
+                                <label class="designation-item"><input type="checkbox" class="desig-checkbox" value="Technician"> Technician</label>
+                                <label class="designation-item"><input type="checkbox" class="desig-checkbox" value="Other"> Other</label>
+                   
+                            </div>
+                        </div>
+                    </div>
 
-                <div class="bulk-controls">
-                    <input type="number" id="bulkSeatsCountInput" min="0" placeholder="Bulk Seats Cap">
-                    <button type="button" class="btn btn-secondary" id="applyBulkSeatsBtn" style="padding: 6px 12px;">Override Seats</button>
-                </div>
+                    <div class="array-group-box">
+                        <h4 style="margin-bottom: 5px; color:#334155;">Attatchment file</h4>
+                        <select id="documentRequirementSelect" style="margin-bottom: 10px;" required>
+                            <option value="No">No</option>
+                            <option value="Yes">Yes</option>
+            
+                        </select>
+                        
+                        <div id="documentRulesConfigContainer" class="hidden-element">
+                            <div id="fileArrayWrapper"></div>
+         
+                            <button type="button" class="btn-action btn-add" id="addFileRuleRowBtn" style="margin-top: 5px;">+ Append Dynamic Document Target Row</button>
+                        </div>
+                    </div>
 
-                <div id="ibraSectionBox" style="margin-top: 15px;">
-                    <span style="font-size: 14px; font-weight: bold; color: var(--text-muted);">Ibra Institutional Allocations</span>
-                    <div id="ibraAllocationWrapper" class="allocation-container-box"></div>
-                </div>
-                
-                <div id="otherSectionBox" style="margin-top: 15px;">
-                    <span style="font-size: 14px; font-weight: bold; color: var(--text-muted);">Other Institutional Allocations</span>
-                    <div id="otherAllocationWrapper" class="allocation-container-box"></div>
-                </div>
+                    <div class="array-group-box">
+     
+                        <h4 style="margin-bottom: 10px; color:#334155;">Institutional Allocations / Chair Mapping</h4>
+                        
+                        <div class="allocation-controls">
+                            <select id="allocationFilterSelect" style="padding: 10px; font-size: 13px;">
+                                <option value="ALL">...Institutions Restrictions Options...</option>
+                                <option value="IBRA">Ibra Hospital Institutions Restrictions Only</option>
+                           
+                                <option value="OTHER">Other Institutions Restrictions Only</option>
+                            </select>
+                            <select id="allocationBulkSelectAction" style="padding: 10px; font-size: 13px;">
+                                <option value="">-- Bulk Select Toggles --</option>
+                                <option value="ALL">Select All Visible</option>
+                           
+                                <option value="NONE">Deselect All Visible</option>
+                            </select>
+                        </div>
 
-                <div style="margin-top: 20px;">
-                    <button type="submit" class="btn">Save Course Matrix Structure</button>
-                    <button type="button" class="btn btn-secondary hidden-element" id="cancelEditBtn">Cancel Revisions</button>
-                </div>
-            </form>
+                        <div class="allocation-bulk-row">
+               
+                            <input type="number" id="bulkSeatsCountInput" placeholder="Bulk Chairs Value (e.g. 3)" min="0" style="padding: 10px; font-size: 13px;">
+                            <button type="button" class="btn-action btn-add" id="applyBulkSeatsBtn">Apply Bulk Seats</button>
+                        </div>
+
+                        <div id="ibraSectionBox" style="margin-bottom: 15px;">
+                            <h5 style="font-size: 13px; color: #475569; margin-bottom: 6px; font-weight: bold;">Ibra Settings</h5>
+                            <div class="allocation-container" id="allocationWrapperIbra"></div>
+                        </div>
+
+                        <div id="otherSectionBox">
+                            <h5 style="font-size: 13px; color: #475569; margin-bottom: 6px; font-weight: bold;">Other Settings</h5>
+                            <div class="allocation-container" id="allocationWrapperOther"></div>
+                        </div>
+               
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn-flex btn-primary-action" id="submitFormBtn">Save</button>
+                        <button type="button" class="btn-flex btn-secondary" onclick="clearForm()">Clear Form</button>
+                 
+                    </div>
+                    
+                </form>
+            </div>
         </div>
 
-        <div class="panel">
-            <h3>Live Course Matrix Configuration Space</h3>
-            <div class="table-responsive">
+        <div class="list-table-container">
+            <h2>Active Monitored Courses Array</h2>
+            <div style="overflow-x: auto; margin-top: 20px;">
                 <table>
                     <thead>
                         <tr>
-                            <th>Course Architecture</th>
-                            <th>Schedule Date</th>
-                            <th>Allocated Seats</th>
-                            <th>Criteria Matrix</th>
-                            <th>Documents Bound</th>
-                            <th>Actions</th>
+                            <th>Course Name</th>
+          
+                            <th>Target Date</th>
+                            <th>Chairs Available</th>
+                            <th>Target Criteria</th>
+                       
+                            <th>Dynamic Files Mapping Requirements</th>
+                            <th>Operations Control</th>
                         </tr>
                     </thead>
+                   
                     <tbody id="coursesMainTableBody">
                         <tr>
-                            <td colspan="6" style="text-align:center; padding: 20px; color: var(--text-muted);">
-                                Parsing real-time cloud data rows...
-                            </td>
+                            <td colspan="6" style="color: #64748b; text-align: center;">Refreshing active configuration modules...</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
-
     </div>
 
-    <script>
+    <script type="module">
+       
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        const client = createClient(
+            "https://pqgkdnxdsybcfamwadrf.supabase.co",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxZ2tkbnhkc3liY2ZhbXdhZHJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MzE0NjUsImV4cCI6MjA5NzEwNzQ2NX0.lugWuqNI5VMy6hCn-y38-hi825pIHcUjOCAWCsMJz4c"
+        );
+
         let editingCourseId = null;
         let globalInstitutionsList = [];
 
-        const client = window.supabase || {
-            from: (tableName) => ({
-                select: () => ({
-                    order: () => Promise.resolve({ data: [], error: null }),
-                    eq: () => ({ single: () => Promise.resolve({ data: null, error: null }), error: null })
-                }),
-                insert: () => Promise.resolve({ data: { id: 1 }, error: null }),
-                update: () => ({ eq: () => Promise.resolve({ error: null }) }),
-                delete: () => ({ eq: () => Promise.resolve({ error: null }) })
-            })
-        };
+        const masterInstitutionsAndDepartments = [
+            "Al Mudhaibi Health Center", "Wadi Bani Khalid Hospital", "Sinaw Health Hospital",
+            "Ibra Health Center", "Sinaw Health Center", "Al Yahmadi Health Center",
+            "Al Mudhaibi Health Center (New)", "Samad Al Shaan Hospital", "Bidiyah Hospital",
+            "Al Qabil Health Center", "Wadi Dama Wa At Taiyyin Hospital", "Al Dhahir Health Center",
+            "Al Jaza Health Center", "Sumayyan Health Center", "Al Jardaa Health Center",
+      
+            "Al Aflaj Health Center", "Miss Health Centre",
+            "Ibra - Emergency Department Doctor", "Ibra - Emergency Department Nurse", "Ibra - Internal Medicine Department", 
+            "Ibra - General Surgery Department", "Ibra - Paediatrician", "Ibra - Obstetrics and Gynecology Department", 
+            "Ibra - Orthopedics Department", "Ibra - Ophthalmology Department", "Ibra - ENT Department", 
+           
+            "Ibra - Anesthesia Department", "Ibra - Dialysis Unit", "Ibra - Radiology Department", 
+            "Ibra - Laboratory Department", "Ibra - Physiotherapy Department", "Ibra - Clinical Nutrition Department", 
+            "Ibra - Pharmacy Department", "Ibra - Male Medical and Surgical Ward", "Ibra - Female Medical and Surgical Ward", 
+            "Ibra - Pediatrics Ward", "Ibra - Obstetrics and Gynecology Ward", "Ibra - Adult Intensive Care Unit (ICU)", 
+   
+            "Ibra - Special Care Baby Unit (SCBU)", "Ibra - OPD", "Ibra - Nephrologist", "Ibra - DS Nurse", 
+            "Ibra - OT Nurse", "Ibra - RT"
+        ];
+        function pushFileRuleInputRow(labelVal = '', exampleVal = '') {
+            const wrapper = document.getElementById('fileArrayWrapper');
+            const row = document.createElement('div');
+            row.className = 'array-item-row';
+            row.style.flexDirection = 'column';
+            row.style.alignItems = 'stretch';
+            row.style.background = '#ffffff';
+            row.style.padding = '10px';
+            row.style.borderRadius = '8px';
+            row.style.border = '1px solid #e2e8f0';
+            row.style.marginBottom = '10px';
+            row.innerHTML = `
+                <div style="display: flex; gap: 10px; align-items: center; width: 100%;">
+                    <input type="text" class="file-label-item" placeholder="Document Label (e.g. ACLS Card)" value="${labelVal}" required style="flex: 1;">
+                    <input type="text" class="file-example-item" placeholder="Reference Guide Image URL" value="${exampleVal}" style="flex: 1;">
+              
+                    <button type="button" class="btn-remove">✕</button>
+                </div>
+                <div class="row-image-preview-box" style="margin-top: 8px; display: ${exampleVal ? 'block' : 'none'};">
+                    <img src="${exampleVal || ''}" style="max-width: 100px; max-height: 100px; object-fit: contain; border-radius: 6px; border: 1px solid #cbd5e1; display: block;"
+                    onerror="this.parentElement.style.display='none'">
+                </div>
+            `;
+            const linkInput = row.querySelector('.file-example-item');
+            const previewBox = row.querySelector('.row-image-preview-box');
+            const previewImg = previewBox.querySelector('img');
+            linkInput.addEventListener('input', () => {
+                const url = linkInput.value.trim();
+                if (url) {
+                    previewImg.src = url;
+                    previewBox.style.display = 'block';
+                
+                } else {
+                    previewBox.style.display = 'none';
+                    previewImg.src = '';
+                }
+            });
+            row.querySelector('.btn-remove').addEventListener('click', () => {
+                row.remove();
+                if(document.querySelectorAll('.file-label-item').length === 0) {
+                    pushFileRuleInputRow('Required Document', '');
+                }
+            });
+            wrapper.appendChild(row);
+        }
 
         async function seedAndFetchMasterInstitutions() {
-            if (globalInstitutionsList.length > 0) return;
-            try {
-                const { data, error } = await client.from('institutions').select('*').order('name', { ascending: true });
-                if (!error && data && data.length > 0) {
-                    globalInstitutionsList = data;
-                } else {
-                    globalInstitutionsList = [
-                        { id: 101, name: "Ibra - Regional HQ Main Center" },
-                        { id: 102, name: "Ibra - Nursing Clinical Satellite" },
-                        { id: 103, name: "Muscat General Specialty Infirmary" },
-                        { id: 104, name: "Nizwa Treatment Hub Terminal" }
-                    ];
-                }
-            } catch (e) {
-                console.error("Master collection failed to parse.", e);
+            const { data: existing } = await client.from('institutions').select('*');
+            if (!existing || existing.length === 0) {
+                const insertPayload = masterInstitutionsAndDepartments.map(name => ({ name }));
+                await client.from('institutions').insert(insertPayload);
+                const { data: updated } = await client.from('institutions').select('*');
+                globalInstitutionsList = updated || [];
+            } else {
+                globalInstitutionsList = existing;
             }
         }
 
-        function pushFileRuleInputRow(labelValue = '', exampleValue = '') {
-            const wrapper = document.getElementById('fileArrayWrapper');
-            const rowId = 'filerow_' + Math.random().toString(36).substr(2, 9);
-
-            const rowTemplate = `
-                <div class="file-rule-row" id="${rowId}">
-                    <input type="text" class="file-label-item" placeholder="Document Label Name" value="${labelValue}" style="flex: 1;">
-                    <input type="text" class="file-example-item" placeholder="Example Image Link/URL" value="${exampleValue}" style="flex: 1;">
-                    <button type="button" class="btn-tbl-delete" onclick="document.getElementById('${rowId}').remove()" style="padding: 6px 10px;">✕</button>
-                </div>
-            `;
-            wrapper.insertAdjacentHTML('beforeend', rowTemplate);
-        }
-
         function renderAllocationMappingFramework(currentMap = []) {
-            const ibraContainer = document.getElementById('ibraAllocationWrapper');
-            const otherContainer = document.getElementById('otherAllocationWrapper');
+            const ibraContainer = document.getElementById('allocationWrapperIbra');
+            const otherContainer = document.getElementById('allocationWrapperOther');
             
             let ibraHtml = [];
             let otherHtml = [];
@@ -381,25 +440,26 @@
                 const checkedStatus = match || currentMap.length === 0 ? 'checked' : '';
                 const categoryType = inst.name.startsWith("Ibra - ") ? "IBRA" : "OTHER";
 
-                const itemMarkup = `
+                // inline style used strictly to keep layout components correctly text-aligned
+                const markup = `
                     <div class="allocation-item" data-category="${categoryType}" data-id="${inst.id}">
-                        <label style="display: flex; align-items: center; gap: 8px; margin: 0; cursor: pointer; text-align: left;">
-                            <input type="checkbox" class="inst-checkbox-target" data-id="${inst.id}" data-current-count="${currentCount}" ${checkedStatus} style="margin: 0; vertical-align: middle;">
-                            <span style="display: inline-block; vertical-align: middle; line-height: 1.2;">${inst.name}</span>
+                        <label style="text-align: left; display: flex; align-items: center; gap: 6px;">
+                            <input type="checkbox" class="inst-checkbox-target" data-id="${inst.id}" data-current-count="${currentCount}" ${checkedStatus} style="margin:0; vertical-align:middle;">
+                            <span style="line-height: 1.2; display: inline-block; vertical-align: middle;">${inst.name}</span>
                         </label>
                         <input type="number" class="inst-slots-target" data-id="${inst.id}" min="0" placeholder="Cap" value="${defaultSlots}">
                     </div>
                 `;
 
                 if (categoryType === "IBRA") {
-                    ibraHtml.push(itemMarkup);
+                    ibraHtml.push(markup);
                 } else {
-                    otherHtml.push(itemMarkup);
+                    otherHtml.push(markup);
                 }
             });
 
-            ibraContainer.innerHTML = ibraHtml.join('') || '<div style="color:var(--text-muted); font-size:12px; padding:8px;">No elements</div>';
-            otherContainer.innerHTML = otherHtml.join('') || '<div style="color:var(--text-muted); font-size:12px; padding:8px;">No elements</div>';
+            ibraContainer.innerHTML = ibraHtml.join('') || '<div style="color:#64748b; font-size:12px; padding:5px;">No records</div>';
+            otherContainer.innerHTML = otherHtml.join('') || '<div style="color:#64748b; font-size:12px; padding:5px;">No records</div>';
             
             applyAllocationFilter();
         }
@@ -417,20 +477,19 @@
                 }
             });
 
-            const visibleIbra = document.querySelectorAll('#ibraAllocationWrapper .allocation-item:not(.hidden-element)');
-            const ibraBox = document.getElementById('ibraSectionBox');
+            // Handle panel container visibility switches based on filters
+            const visibleIbra = document.querySelectorAll('#allocationWrapperIbra .allocation-item:not(.hidden-element)');
             if (visibleIbra.length === 0) {
-                ibraBox.classList.add('hidden-element');
+                document.getElementById('ibraSectionBox').classList.add('hidden-element');
             } else {
-                ibraBox.classList.remove('hidden-element');
+                document.getElementById('ibraSectionBox').classList.remove('hidden-element');
             }
 
-            const visibleOther = document.querySelectorAll('#otherAllocationWrapper .allocation-item:not(.hidden-element)');
-            const otherBox = document.getElementById('otherSectionBox');
+            const visibleOther = document.querySelectorAll('#allocationWrapperOther .allocation-item:not(.hidden-element)');
             if (visibleOther.length === 0) {
-                otherBox.classList.add('hidden-element');
+                document.getElementById('otherSectionBox').classList.add('hidden-element');
             } else {
-                otherBox.classList.remove('hidden-element');
+                document.getElementById('otherSectionBox').classList.remove('hidden-element');
             }
         }
 
@@ -466,7 +525,6 @@
                     directCount++;
                 }
             });
-
             alert(`Successfully updated localized seats to ${seatCount} for ${directCount} chosen institutions.`);
         }
 
@@ -479,7 +537,6 @@
                 document.querySelectorAll('.desig-checkbox').forEach(cb => cb.checked = false);
             }
         });
-
         document.getElementById('documentRequirementSelect').addEventListener('change', (e) => {
             const targetContainer = document.getElementById('documentRulesConfigContainer');
             if (e.target.value === 'Yes') {
@@ -491,10 +548,8 @@
 
         async function reloadAdminConsoleDashboard() {
             await seedAndFetchMasterInstitutions();
-            
             const { data: courses, error: errC } = await client.from('courses').select('*').order('id', { ascending: true });
             const tbody = document.getElementById('coursesMainTableBody');
-            
             if (errC) {
                 tbody.innerHTML = `<tr><td colspan="6" style="color:#dc2626; text-align:center; padding: 20px;">Error indexing courses table data arrays.</td></tr>`;
             } else if (!courses || courses.length === 0) {
@@ -509,14 +564,19 @@
                         } else if (typeof c.file_labels === 'string') {
                             fileLabels = JSON.parse(c.file_labels);
                         }
-                    } catch (e) { fileLabels = []; }
+                    } catch (e) {
+                        fileLabels = [];
+                    }
+ 
                     try {
                         if (Array.isArray(c.file_examples)) {
                             fileExamples = c.file_examples;
                         } else if (typeof c.file_examples === 'string') {
                             fileExamples = JSON.parse(c.file_examples);
                         }
-                    } catch (e) { fileExamples = []; }
+                    } catch (e) {
+                        fileExamples = [];
+                    }
 
                     if (!Array.isArray(fileLabels)) fileLabels = [];
                     if (!Array.isArray(fileExamples)) fileExamples = [];
@@ -548,12 +608,12 @@
                         } else if (typeof c.allowed_designations === 'string' && c.allowed_designations.trim() !== '') {
                             desigArr = JSON.parse(c.allowed_designations);
                         }
-                    } catch(e) { desigArr = []; }
+                    } catch(e) { desigArr = [];
+                    }
 
                     const desigMarkup = (!desigArr || desigArr.length === 0 || desigArr.includes('All')) 
                         ? `<span class="badge-info" style="background:#f0fdf4; color:#16a34a;">All Roles</span>`
                         : desigArr.map(d => `<span class="badge-info" style="background:#e0f2fe; color:#0369a1;">${d}</span>`).join(' ');
-
                     return `
                         <tr>
                             <td><b>${courseNameClean}</b></td>
@@ -584,7 +644,6 @@
 
             const { data: course } = await client.from('courses').select('*').eq('id', editingCourseId).single();
             if (!course) return;
-
             document.getElementById('courseName').value = course.name || '';
             document.getElementById('courseDate').value = course.course_date || '';
             document.getElementById('courseSeats').value = course.seats !== undefined ? course.seats : '';
@@ -597,11 +656,11 @@
                 } else if (typeof course.allowed_designations === 'string' && course.allowed_designations.trim() !== '') {
                     desigArr = JSON.parse(course.allowed_designations);
                 }
-            } catch(e) { desigArr = []; }
+            } catch(e) { desigArr = [];
+            }
 
             const modeSelect = document.getElementById('designationModeSelect');
             const box = document.getElementById('customDesignationsBox');
-            
             document.querySelectorAll('.desig-checkbox').forEach(cb => cb.checked = false);
 
             if (!desigArr || desigArr.length === 0 || desigArr.includes('All')) {
@@ -632,7 +691,6 @@
 
             const docSelect = document.getElementById('documentRequirementSelect');
             const docContainer = document.getElementById('documentRulesConfigContainer');
-
             if (labels.length === 0) {
                 docSelect.value = 'No';
                 docContainer.classList.add('hidden-element');
@@ -680,12 +738,10 @@
 
         async function handleFormSubmission(e) {
             e.preventDefault();
-            
             const name = document.getElementById('courseName').value.trim();
             const course_date = document.getElementById('courseDate').value;
             const seats = parseInt(document.getElementById('courseSeats').value, 10);
             const allowed_sex = document.getElementById('courseGender').value;
-
             const modeSelect = document.getElementById('designationModeSelect').value;
             let allowed_designations = ['All'];
             
@@ -721,7 +777,6 @@
                 const { error: updErr } = await client.from('courses').update({
                     name, course_date, seats, required_files, file_labels, file_examples, allowed_sex, allowed_designations
                 }).eq('id', editingCourseId);
-
                 if (updErr) {
                     alert("Matrix transaction insertion execution error: " + updErr.message);
                     return;
@@ -736,7 +791,6 @@
                 const { data: newCourse, error: insErr } = await client.from('courses').insert({
                     name, course_date, seats, required_files, file_labels, file_examples, allowed_sex, allowed_designations
                 }).select().single();
-
                 if (insErr) {
                     alert("Creation module error pipeline rejection: " + insErr.message);
                     return;
@@ -759,6 +813,7 @@
                     const instId = Number(chk.getAttribute('data-id'));
                     const currentCount = parseInt(chk.getAttribute('data-current-count'), 10) || 0;
                     const slotsInput = document.querySelector(`.inst-slots-target[data-id="${instId}"]`);
+    
                     const max_slots = slotsInput ? parseInt(slotsInput.value, 10) || 1 : 1;
                     
                     allocationRows.push({
@@ -767,16 +822,15 @@
                         max_slots: max_slots,
                         registered_count: currentCount
                     });
+              
                 }
             });
-
             if (allocationRows.length > 0) {
                 await client.from('course_institutions').insert(allocationRows);
             }
         }
 
         window.pushFileRuleInputRow = pushFileRuleInputRow;
-
         document.getElementById('addFileRuleRowBtn').addEventListener('click', () => pushFileRuleInputRow('', ''));
         document.getElementById('cancelEditBtn').addEventListener('click', exitEditOperationalMode);
         document.getElementById('courseConfigForm').addEventListener('submit', handleFormSubmission);
@@ -784,13 +838,44 @@
         document.getElementById('allocationFilterSelect').addEventListener('change', applyAllocationFilter);
         document.getElementById('allocationBulkSelectAction').addEventListener('change', handleBulkSelectionToggle);
         document.getElementById('applyBulkSeatsBtn').addEventListener('click', handleBulkSeatsOverride);
-
+        
         (async function init() {
             await seedAndFetchMasterInstitutions();
             pushFileRuleInputRow('Required Document', '');
             renderAllocationMappingFramework([]);
             await reloadAdminConsoleDashboard();
         })();
+        
+        window.clearForm = function() {
+            if (!confirm("⚠️ Are you sure you want to clear all fields? This action cannot be undone.")) {
+                return;
+            }
+        
+            const form = document.getElementById('courseConfigForm');
+            form.reset();
+        
+            document.getElementById('customDesignationsBox').classList.add('hidden-element');
+            document.getElementById('documentRulesConfigContainer').classList.add('hidden-element');
+        
+            const fileWrapper = document.getElementById('fileArrayWrapper');
+            if (fileWrapper) {
+                fileWrapper.innerHTML = '';
+            }
+        
+            const allocationWrapperIbra = document.getElementById('allocationWrapperIbra');
+            if (allocationWrapperIbra) {
+                allocationWrapperIbra.innerHTML = '';
+            }
+            const allocationWrapperOther = document.getElementById('allocationWrapperOther');
+            if (allocationWrapperOther) {
+                allocationWrapperOther.innerHTML = '';
+            }
+        
+            document.getElementById('designationModeSelect').value = 'All';
+            document.getElementById('documentRequirementSelect').value = 'No';
+        
+            alert("Form cleared successfully.");
+        };
     </script>
 </body>
 </html>
