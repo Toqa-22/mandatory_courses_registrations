@@ -51,6 +51,9 @@
         .allocation-item.hidden-element { display: none !important; }
         .allocation-item label { font-size: 13px; color: #334155; display: flex; align-items: center; gap: 6px; width: 60%; cursor: pointer; }
         .allocation-item input[type="number"] { width: 35%; padding: 6px; font-size: 13px; border-radius: 6px; }
+        
+        /* Structural visibility utility alignment */
+        .hidden-element { display: none !important; }
     </style>
 </head>
 <body>
@@ -179,8 +182,13 @@
             row.innerHTML = `
                 <input type="text" class="file-label-item" placeholder="Document Label (e.g. ACLS Card)" value="${labelVal}" required>
                 <input type="text" class="file-example-item" placeholder="Reference Guide Image URL" value="${exampleVal}">
-                <button type="button" class="btn-remove" onclick="this.parentElement.remove()">✕</button>
+                <button type="button" class="btn-remove">✕</button>
             `;
+            
+            row.querySelector('.btn-remove').addEventListener('click', () => {
+                row.remove();
+            });
+            
             wrapper.appendChild(row);
         }
 
@@ -459,7 +467,6 @@
 
         (async function init() {
             await seedAndFetchMasterInstitutions();
-            // Automatically seeds with your provided file configurations setup
             pushFileRuleInputRow('Required Document', '');
             renderAllocationMappingFramework([]);
             await reloadAdminConsoleDashboard();
