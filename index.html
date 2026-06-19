@@ -151,9 +151,16 @@
                     </div>
 
                     <div class="array-group-box">
-                        <h4 style="margin-bottom: 10px; color:#334155;">Dynamic File Rules Verification Parameters</h4>
-                        <div id="fileArrayWrapper"></div>
-                        <button type="button" class="btn-action btn-add" id="addFileRuleRowBtn" style="margin-top: 5px;">+ Append Dynamic Document Target Row</button>
+                        <h4 style="margin-bottom: 5px; color:#334155;">Dynamic File Rules Verification Parameters</h4>
+                        <select id="documentRequirementSelect" style="margin-bottom: 10px;" required>
+                            <option value="No">Require Documents for Registration? No (Default)</option>
+                            <option value="Yes">Require Documents for Registration? Yes</option>
+                        </select>
+                        
+                        <div id="documentRulesConfigContainer" class="hidden-element">
+                            <div id="fileArrayWrapper"></div>
+                            <button type="button" class="btn-action btn-add" id="addFileRuleRowBtn" style="margin-top: 5px;">+ Append Dynamic Document Target Row</button>
+                        </div>
                     </div>
 
                     <div class="array-group-box">
@@ -278,6 +285,9 @@
 
             row.querySelector('.btn-remove').addEventListener('click', () => {
                 row.remove();
+                if(document.querySelectorAll('.file-label-item').length === 0) {
+                    pushFileRuleInputRow('Required Document', '');
+                }
             });
             
             wrapper.appendChild(row);
@@ -378,6 +388,15 @@
             }
         });
 
+        document.getElementById('documentRequirementSelect').addEventListener('change', (e) => {
+            const targetContainer = document.getElementById('documentRulesConfigContainer');
+            if (e.target.value === 'Yes') {
+                targetContainer.classList.remove('hidden-element');
+            } else {
+                targetContainer.classList.add('hidden-element');
+            }
+        });
+
         async function reloadAdminConsoleDashboard() {
             await seedAndFetchMasterInstitutions();
             
@@ -427,7 +446,7 @@
                                 <span class="badge-info">${l}</span>
                                 ${imgMarkup}
                             </div>`;
-                    }).join('') || '<span class="badge-info">None</span>';
+                    }).join('') || '<span class="badge-info" style="background:#f1f5f9; color:#94a3b8;">None Required</span>';
                     
                     const sexAllowed = c.allowed_sex || 'Both';
                     const availableSeats = c.seats !== undefined && c.seats !== null ? c.seats : 0;
@@ -523,9 +542,16 @@
             if(!Array.isArray(labels)) labels = [];
             if(!Array.isArray(examples)) examples = [];
 
+            const docSelect = document.getElementById('documentRequirementSelect');
+            const docContainer = document.getElementById('documentRulesConfigContainer');
+
             if (labels.length === 0) {
+                docSelect.value = 'No';
+                docContainer.classList.add('hidden-element');
                 pushFileRuleInputRow('Required Document', '');
             } else {
+                docSelect.value = 'Yes';
+                docContainer.classList.remove('hidden-element');
                 labels.forEach((lbl, idx) => pushFileRuleInputRow(lbl, examples[idx] || ''));
             }
 
@@ -544,6 +570,8 @@
             document.getElementById('bulkSeatsCountInput').value = '';
             document.getElementById('allocationFilterSelect').value = 'ALL';
             document.getElementById('customDesignationsBox').classList.add('hidden-element');
+            document.getElementById('documentRulesConfigContainer').classList.add('hidden-element');
+            document.getElementById('documentRequirementSelect').value = 'No';
             document.querySelectorAll('.desig-checkbox').forEach(cb => cb.checked = false);
             pushFileRuleInputRow('Required Document', '');
             renderAllocationMappingFramework([]);
@@ -582,18 +610,24 @@
                 allowed_designations = Array.from(checkedBoxes).map(cb => cb.value);
             }
 
-            const labelElements = document.querySelectorAll('.file-label-item');
-            const exampleElements = document.querySelectorAll('.file-example-item');
-            
-            const file_labels = [];
-            const file_examples = [];
-            
-            labelElements.forEach((el, index) => {
-                file_labels.push(el.value.trim());
-                file_examples.push(exampleElements[index] ? exampleElements[index].value.trim() : '');
-            });
+            const docRequirement = document.getElementById('documentRequirementSelect').value;
+            let file_labels = [];
+            let file_examples = [];
+            let required_files = 0;
 
-            const required_files = file_labels.length;
+            if (docRequirement === 'Yes') {
+                const labelElements = document.querySelectorAll('.file-label-item');
+                const exampleElements = document.querySelectorAll('.file-example-item');
+                
+                labelElements.forEach((el, index) => {
+                    const labelVal = el.value.trim();
+                    if(labelVal) {
+                        file_labels.push(labelVal);
+                        file_examples.push(exampleElements[index] ? exampleElements[index].value.trim() : '');
+                    }
+                });
+                required_files = file_labels.length;
+            }
 
             if (editingCourseId) {
                 const { error: updErr } = await client.from('courses').update({
@@ -655,7 +689,7 @@
 
         window.pushFileRuleInputRow = pushFileRuleInputRow;
 
-        document.getElementById('addFileRuleRowBtn').addEventListener('click', () => pushFileRuleInputRow('Required Document', ''));
+        document.getElementById('addFileRuleRowBtn').addEventListener('click', () => pushFileRuleInputRow('', ''));
         document.getElementById('cancelEditBtn').addEventListener('click', exitEditOperationalMode);
         document.getElementById('courseConfigForm').addEventListener('submit', handleFormSubmission);
         
