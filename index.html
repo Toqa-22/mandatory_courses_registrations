@@ -5,17 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course Management System Dashboard</title>
     <style>
-        .btn-clear { 
-            padding: 12px 24px; 
-            background: #64748b; 
-            color: white; 
-            border: none; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            font-weight: bold; 
+        /* New Button Group Styles */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
         }
-        .btn-clear:hover { background: #475569; }
         
+        .btn-flex {
+            flex: 1;
+            padding: 16px;
+            font-size: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+            transition: 0.3s;
+        }
+        
+        /* Primary Button (Full Color) */
+        .btn-primary-action {
+            background: linear-gradient(90deg, #2563eb, #7c3aed);
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary-action:hover {
+            filter: brightness(1.1);
+        }
+        
+        /* Secondary Button (Border Only) */
+        .btn-secondary {
+            background: white;
+            color: #2563eb;
+            border: 2px solid #2563eb;
+        }
+        
+        .btn-secondary:hover {
+            background: #eff6ff;
+        }
         .nav-buttons{
             display:flex;
             justify-content:center;
@@ -78,7 +106,6 @@
         .btn-remove { background: #fef2f2; color: #dc2626; padding: 14px; border-radius: 12px; border: none; cursor: pointer; }
         .btn-remove:hover { background: #fee2e2; }
         
-        .btn-primary-action { width: 100%; padding: 16px; background: linear-gradient(90deg, #2563eb, #7c3aed); border: none; color: white; font-size: 16px; border-radius: 12px; cursor: pointer; font-weight: bold; }
         .btn-cancel { background: #e2e8f0; color: #334155; margin-bottom: 15px; width: 100%; padding: 12px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; }
 
         .list-table-container { background: white; border-radius: 30px; padding: 40px; box-shadow: 0 10px 30px rgba(0, 0, 0, .08); overflow-x: auto; }
@@ -196,8 +223,11 @@
                         <div class="allocation-container" id="allocationWrapper"></div>
                     </div>
 
-                    <button type="submit" class="btn-primary-action" id="submitFormBtn">Push Action Configuration</button>
-                    <button type="button" class="btn-clear" onclick="clearForm()">Clear Form</button>
+                    <div class="button-group">
+                        <button type="submit" class="btn-flex btn-primary-action" id="submitFormBtn">Push Action Configuration</button>
+                        <button type="button" class="btn-flex btn-secondary" onclick="clearForm()">Clear Form</button>
+                    </div>
+                    
                 </form>
             </div>
         </div>
