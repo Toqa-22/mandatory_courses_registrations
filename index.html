@@ -452,9 +452,9 @@
 
                 const markup = `
                     <div class="allocation-item" data-category="${categoryType}" data-id="${inst.id}">
-                        <label style="text-align: left; display: flex; align-items: center; gap: 6px;">
-                            <input type="checkbox" class="inst-checkbox-target" data-id="${inst.id}" data-current-count="${currentCount}" ${checkedStatus} style="margin:0; vertical-align:middle;">
-                            <span style="line-height: 1.2; display: inline-block; vertical-align: middle;">${inst.name}</span>
+                        <label class="allocation-item-label-group">
+                            <input type="checkbox" class="inst-checkbox-target" data-id="${inst.id}" data-current-count="${currentCount}" ${checkedStatus}>
+                            <span>${inst.name}</span>
                         </label>
                         <input type="number" class="inst-slots-target" data-id="${inst.id}" min="0" placeholder="Cap" value="${defaultSlots}">
                     </div>
