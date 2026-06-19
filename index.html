@@ -171,6 +171,7 @@
         .btn-tbl-delete:hover { background: #fee2e2;
         }
         
+        .style-chosen { border: 2px dashed #7c3aed !important; }
         .allocation-controls { display: flex;
         gap: 10px; margin-bottom: 12px; }
         .allocation-bulk-row { display: flex; gap: 10px; margin-bottom: 15px;
@@ -183,18 +184,28 @@
         padding: 10px; background: white; }
         
         /* Fixed Alignment Flex Framework for Allocations Rows */
-        .allocation-item { display: flex; align-items: center; justify-content: space-between;
-        margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #e2e8f0; gap: 15px; }
-        .allocation-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
-        .allocation-item.hidden-element { display: none !important; }
+        .allocation-item { display: flex;
+        align-items: center; justify-content: space-between;
+        margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #e2e8f0; gap: 15px;
+        }
+        .allocation-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none;
+        }
+        .allocation-item.hidden-element { display: none !important;
+        }
         
-        .allocation-item-label-group { font-size: 13px; color: #334155; display: inline-flex; align-items: center;
-        gap: 10px; width: 65%; cursor: pointer; text-align: left; }
-        .allocation-item-label-group input[type="checkbox"] { width: 16px; height: 16px; flex-shrink: 0; margin: 0; cursor: pointer; }
-        .allocation-item-label-group span { line-height: 1.4; word-break: break-word; }
+        .allocation-item-label-group { font-size: 13px;
+        color: #334155; display: inline-flex; align-items: center;
+        gap: 10px; width: 65%; cursor: pointer; text-align: left;
+        }
+        .allocation-item-label-group input[type="checkbox"] { width: 16px; height: 16px; flex-shrink: 0; margin: 0;
+        cursor: pointer; }
+        .allocation-item-label-group span { line-height: 1.4; word-break: break-word;
+        }
         
-        .allocation-item input[type="number"] { width: 30%; max-width: 90px;
-        padding: 8px; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; text-align: center; }
+        .allocation-item input[type="number"] { width: 30%;
+        max-width: 90px;
+        padding: 8px; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; text-align: center;
+        }
         
         .designation-grid { display: grid;
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 10px; }
@@ -225,7 +236,6 @@
                 <h2 id="formPanelTitle">Create New Managed Course</h2>
                 <button id="cancelEditBtn" class="btn-cancel style-chosen hidden-element">Cancel Edit Operational Mode</button>
                 <form id="courseConfigForm">
-         
                     <div class="input-row">
                         <input type="text" id="courseName" placeholder="Course Name (e.g. BLS)" required>
                         <input type="date" id="courseDate" required>
@@ -299,7 +309,6 @@
                             <button type="button" class="btn-action btn-add" id="applyBulkSeatsBtn">Apply Bulk Seats</button>
                         </div>
 
-                        <!-- Split Containers into Ibra and Other -->
                         <div id="ibraSectionBox" style="margin-bottom: 15px;">
                             <h5 style="font-size: 13px; color: #475569; margin-bottom: 6px; font-weight: bold;">Ibra Settings</h5>
                             <div class="allocation-container" id="allocationWrapperIbra"></div>
@@ -311,13 +320,11 @@
                         </div>
                     </div>
 
-                    <!-- Primary Actions Row -->
                     <div class="button-group">
                         <button type="submit" class="btn-flex btn-primary-action" id="submitFormBtn">Save</button>
                         <button type="button" class="btn-flex btn-secondary" onclick="clearForm()">Clear Form</button>
                     </div>
 
-                    <!-- Template Presets Row Under Save/Clear Buttons -->
                     <div class="button-group">
                         <button type="button" class="btn-flex btn-preset" id="loadBlsPresetBtn">Load BLS Info Template</button>
                         <button type="button" class="btn-flex btn-preset" id="loadAclsPresetBtn">Load ACLS Info Template</button>
@@ -336,6 +343,7 @@
                             <th>Course Name</th>
                             <th>Target Date</th>
                             <th>Chairs Available</th>
+                            <th>Target Gender</th>
                             <th>Target Criteria</th>
                             <th>Dynamic Files Mapping Requirements</th>
                             <th>Operations Control</th>
@@ -343,7 +351,7 @@
                     </thead>
                     <tbody id="coursesMainTableBody">
                         <tr>
-                            <td colspan="6" style="color: #64748b; text-align: center;">Refreshing active configuration modules...</td>
+                            <td colspan="7" style="color: #64748b; text-align: center;">Refreshing active configuration modules...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -442,7 +450,6 @@
             
             let ibraHtml = [];
             let otherHtml = [];
-
             globalInstitutionsList.forEach(inst => {
                 const match = currentMap.find(m => m.institution_id === inst.id);
                 const defaultSlots = match ? match.max_slots : (inst.name.startsWith("Ibra - ") ? 3 : 1);
@@ -459,7 +466,6 @@
                         <input type="number" class="inst-slots-target" data-id="${inst.id}" min="0" placeholder="Cap" value="${defaultSlots}">
                     </div>
                 `;
-
                 if (categoryType === "IBRA") {
                     ibraHtml.push(markup);
                 } else {
@@ -485,7 +491,6 @@
                     item.classList.add('hidden-element');
                 }
             });
-
             const visibleIbra = document.querySelectorAll('#allocationWrapperIbra .allocation-item:not(.hidden-element)');
             if (visibleIbra.length === 0) {
                 document.getElementById('ibraSectionBox').classList.add('hidden-element');
@@ -536,7 +541,6 @@
             const targetFilter = document.getElementById('bulkSeatsTargetFilter').value;
             const allItems = document.querySelectorAll('.allocation-item');
             let directCount = 0;
-
             allItems.forEach(item => {
                 const checkbox = item.querySelector('.inst-checkbox-target');
                 const slotsInput = item.querySelector('.inst-slots-target');
@@ -569,7 +573,6 @@
             const today = new Date();
             today.setDate(today.getDate() + 30); // Default to a month from now
             const defaultDateString = today.toISOString().split('T')[0];
-
             if (type === 'BLS') {
                 document.getElementById('courseName').value = 'BLS';
                 document.getElementById('courseDate').value = defaultDateString;
@@ -587,7 +590,6 @@
                 document.getElementById('fileArrayWrapper').innerHTML = '';
                 pushFileRuleInputRow('Purchase bill', 'https://pqgkdnxdsybcfamwadrf.supabase.co/storage/v1/object/public/blueprints/BLS_bill.jpeg');
                 pushFileRuleInputRow('Heart code online certificate', 'https://pqgkdnxdsybcfamwadrf.supabase.co/storage/v1/object/public/blueprints/BLS_certification.jpeg');
-
                 // Institutional Allocations Pre-configurations
                 const allItems = document.querySelectorAll('.allocation-item');
                 allItems.forEach(item => {
@@ -599,7 +601,6 @@
                         slotsInput.value = (cat === 'IBRA') ? '5' : '2';
                     }
                 });
-
             } else if (type === 'ACLS') {
                 document.getElementById('courseName').value = 'ACLS';
                 document.getElementById('courseDate').value = defaultDateString;
@@ -612,7 +613,6 @@
                 document.querySelectorAll('.desig-checkbox').forEach(cb => {
                     cb.checked = (cb.value === 'Physician' || cb.value === 'Nurse');
                 });
-
                 // Dynamic Files Mapping Setup
                 document.getElementById('documentRequirementSelect').value = 'Yes';
                 document.getElementById('documentRulesConfigContainer').classList.remove('hidden-element');
@@ -621,7 +621,6 @@
                 pushFileRuleInputRow('Valid BLS', 'https://pqgkdnxdsybcfamwadrf.supabase.co/storage/v1/object/public/blueprints/BLS_certification.jpeg');
                 pushFileRuleInputRow('pretest score', 'https://pqgkdnxdsybcfamwadrf.supabase.co/storage/v1/object/public/blueprints/ACLS_SCORE.jpeg');
                 pushFileRuleInputRow('Online course video completed certificate', 'https://pqgkdnxdsybcfamwadrf.supabase.co/storage/v1/object/public/blueprints/ACLS_certification.jpeg');
-
                 // Institutional Allocations Pre-configurations
                 const allItems = document.querySelectorAll('.allocation-item');
                 allItems.forEach(item => {
@@ -665,9 +664,9 @@
             const { data: courses, error: errC } = await client.from('courses').select('*').order('id', { ascending: true });
             const tbody = document.getElementById('coursesMainTableBody');
             if (errC) {
-                tbody.innerHTML = `<tr><td colspan="6" style="color:#dc2626; text-align:center; padding: 20px;">Error indexing courses table data arrays.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" style="color:#dc2626; text-align:center; padding: 20px;">Error indexing courses table data arrays.</td></tr>`;
             } else if (!courses || courses.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#64748b; padding: 20px;">No tracked courses inside live configuration space.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#64748b; padding: 20px;">No tracked courses inside live configuration space.</td></tr>`;
             } else {
                 tbody.innerHTML = courses.map(c => {
                     let fileLabels = [];
@@ -690,7 +689,6 @@
 
                     if (!Array.isArray(fileLabels)) fileLabels = [];
                     if (!Array.isArray(fileExamples)) fileExamples = [];
-
                     const badgeHtml = fileLabels.map((l, idx) => {
                         const imgUrl = fileExamples[idx] || '';
                         const imgMarkup = imgUrl ? `
@@ -705,7 +703,6 @@
                                 ${imgMarkup}
                             </div>`;
                     }).join('') || '<span class="badge-info" style="background:#f1f5f9; color:#94a3b8;">None Required</span>';
-                    
                     const sexAllowed = c.allowed_sex || 'Both';
                     const availableSeats = c.seats !== undefined && c.seats !== null ? c.seats : 0;
                     const courseNameClean = c.name || 'Unnamed Course';
@@ -729,7 +726,9 @@
                             <td>${courseDateClean}</td>
                             <td>${availableSeats} seats</td>
                             <td>
-                                <div style="margin-bottom: 4px;"><span class="badge-info" style="background:#f5f3ff; color:#7c3aed;">Sex: ${sexAllowed}</span></div>
+                                <span class="badge-info" style="background:#f5f3ff; color:#7c3aed;">${sexAllowed}</span>
+                            </td>
+                            <td>
                                 <div>${desigMarkup}</div>
                             </td>
                             <td>${badgeHtml}</td>
@@ -922,6 +921,7 @@
                     const instId = Number(chk.getAttribute('data-id'));
                     const currentCount = parseInt(chk.getAttribute('data-current-count'), 10) || 0;
                     const slotsInput = document.querySelector(`.inst-slots-target[data-id="${instId}"]`);
+    
                     const max_slots = slotsInput ? parseInt(slotsInput.value, 10) || 1 : 1;
                     
                     allocationRows.push({
@@ -945,7 +945,6 @@
         document.getElementById('allocationFilterSelect').addEventListener('change', applyAllocationFilter);
         document.getElementById('allocationBulkSelectAction').addEventListener('change', handleBulkSelectionToggle);
         document.getElementById('applyBulkSeatsBtn').addEventListener('click', handleBulkSeatsOverride);
-
         /* Preset Button Event Listeners */
         document.getElementById('loadBlsPresetBtn').addEventListener('click', () => loadCoursePreset('BLS'));
         document.getElementById('loadAclsPresetBtn').addEventListener('click', () => loadCoursePreset('ACLS'));
@@ -956,7 +955,7 @@
             renderAllocationMappingFramework([]);
             await reloadAdminConsoleDashboard();
         })();
-        
+
         window.clearForm = function() {
             if (!confirm("⚠️ Are you sure you want to clear all fields? This action cannot be undone.")) {
                 return;
@@ -969,7 +968,8 @@
             document.getElementById('documentRulesConfigContainer').classList.add('hidden-element');
         
             const fileWrapper = document.getElementById('fileArrayWrapper');
-            if (fileWrapper) { fileWrapper.innerHTML = ''; }
+            if (fileWrapper) { fileWrapper.innerHTML = '';
+            }
         
             document.getElementById('designationModeSelect').value = 'All';
             document.getElementById('documentRequirementSelect').value = 'No';
