@@ -30,6 +30,9 @@
         .btn-primary-action { width: 100%; padding: 16px; background: linear-gradient(90deg, #2563eb, #7c3aed); border: none; color: white; font-size: 16px; border-radius: 12px; cursor: pointer; font-weight: bold; }
         .btn-cancel { background: #e2e8f0; color: #334155; margin-bottom: 15px; width: 100%; padding: 12px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; }
 
+        .btn-link-records { display: inline-block; padding: 8px 16px; background: #2563eb; color: white; text-decoration: none; border-radius: 10px; font-size: 13px; font-weight: bold; transition: 0.2s; }
+        .btn-link-records:hover { background: #1d4ed8; }
+
         .list-table-container { background: white; border-radius: 30px; padding: 40px; box-shadow: 0 10px 30px rgba(0, 0, 0, .08); overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th, td { padding: 16px; border-bottom: 1px solid #e2e8f0; font-size: 15px; }
@@ -52,7 +55,6 @@
         .allocation-item label { font-size: 13px; color: #334155; display: flex; align-items: center; gap: 6px; width: 60%; cursor: pointer; }
         .allocation-item input[type="number"] { width: 35%; padding: 6px; font-size: 13px; border-radius: 6px; }
         
-        /* Structural visibility utility alignment */
         .hidden-element { display: none !important; }
     </style>
 </head>
@@ -115,7 +117,10 @@
             </div>
 
             <div class="card-box" style="display: flex; flex-direction: column;">
-                <h2>Live Transaction Registration Records</h2>
+                <h2>
+                    <span>Live Transaction Records</span>
+                    <a href="registrations.html" class="btn-link-records">View Page ↗</a>
+                </h2>
                 <div style="flex: 1; overflow-y: auto; max-height: 520px;" id="liveLogsContainer">
                     <div style="color: #64748b; padding: 10px;">Awaiting active real-time queries...</div>
                 </div>
@@ -320,7 +325,7 @@
                         <div style="font-weight:bold; color:#0f172a; margin-bottom:4px;">${l.staff_name} (${l.staff_number})</div>
                         <div style="color:#475569;">Facility Snapshot: <b>${l.institution_name_snapshot}</b></div>
                         <div style="color:#64748b;">Phone Target: ${l.phone_number || 'N/A'} | Designation: <b>${l.designation_snapshot || 'N/A'}</b> | Specialization: ${l.specialization_snapshot || 'General'}</div>
-                        <div style="color:#64748b; margin-top:2px;">Sex: <span class="badge-info" style="background:#eff6ff; color:#2563eb; font-size:11px;">${l.sex_snapshot || 'N/A'}</span></div>
+                        <div style="color:#64748b; margin-top:2px;">Sex: <span class="badge-info" style="background:#eff6ff; color:#2563eb; font-size:11px;">${l.sex || 'N/A'}</span></div>
                         <div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:4px;">
                             ${(l.file_urls || []).map((url, i) => `<a href="${url}" target="_blank" class="badge-info" style="background:#eff6ff; color:#2563eb; text-decoration:none;">Doc #${i+1} Link ↗</a>`).join('')}
                         </div>
