@@ -74,12 +74,10 @@
 
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-
         const client = createClient(
             "https://pqgkdnxdsybcfamwadrf.supabase.co",
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxZ2tkbnhkc3liY2ZhbXdhZHJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MzE0NjUsImV4cCI6MjA5NzEwNzQ2NX0.lugWuqNI5VMy6hCn-y38-hi825pIHcUjOCAWCsMJz4c"
         );
-
         let allData = [];
 
         async function loadData() {
@@ -87,7 +85,6 @@
             const { data: regs, error } = await client.from('registrations').select('*').order('created_at', { ascending: false });
 
             if (error) return console.error(error);
-
             allData = regs.map(r => {
                 const targetCourse = courses.find(c => c.id === r.course_id);
                 return {
@@ -97,14 +94,12 @@
                     course_labels: targetCourse && Array.isArray(targetCourse.file_labels) ? targetCourse.file_labels : []
                 };
             });
-
             document.getElementById('stats').innerHTML = `
                 <div class="stat-card">
                     <div class="stat-label">Total Logs</div>
                     <div class="stat-number">${allData.length}</div>
                 </div>
             `;
-
             document.getElementById('tableBody').innerHTML = allData.map((r, i) => {
                 const filesList = Array.isArray(r.file_urls) ? r.file_urls : [];
                 
@@ -119,7 +114,7 @@
                         <td>${r.phone_number || 'N/A'}</td>
                         <td>${r.staff_name}</td>
                         <td>${r.staff_number}</td>
-                        <td><span class="gender-badge">${r.sex || 'N/A'}</span></td>
+                        <td><span class="gender-badge">${r.gender || r.sex || 'N/A'}</span></td>
                         <td><span class="inst-badge">${r.institution_name_snapshot}</span></td>
                         <td><span class="course-badge">${r.course_name}</span></td>
                         <td>${r.course_date}</td>
@@ -136,7 +131,6 @@
 
         window.handleDeleteRegistration = async function(regId, courseId, instId, staffName) {
             if (!confirm(`Are you sure you want to remove the registration for "${staffName}"?\n\nThis restores course chairs availability (+1) and frees up institutional quota open slots.`)) return;
-
             try {
                 // 1. Restore Course Chairs Counter Allocation (+1 Seat back to room)
                 const { data: courseData } = await client.from('courses').select('seats').eq('id', courseId).single();
@@ -151,7 +145,6 @@
                         .eq('course_id', courseId)
                         .eq('institution_id', instId)
                         .maybeSingle();
-
                     if (mapData && mapData.registered_count > 0) {
                         await client.from('course_institutions')
                             .update({ registered_count: mapData.registered_count - 1 })
@@ -178,7 +171,7 @@
                 `"\t${r.phone_number || ''}"`,
                 `"${r.staff_name}"`,
                 `"${r.staff_number}"`,
-                `"${r.sex || 'N/A'}"`,
+                `"${r.gender || r.sex || 'N/A'}"`,
                 `"${r.institution_name_snapshot}"`,
                 `"${r.course_name}"`,
                 r.course_date
