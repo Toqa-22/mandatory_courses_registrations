@@ -38,7 +38,7 @@
         .btn-submit { background: linear-gradient(90deg, #2563eb, #7c3aed); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 20px; width: 100%; }
         .btn-submit:disabled { background: #cbd5e1; cursor: not-allowed; }
 
-        /* Course Matrix View */
+        /* Original Course Matrix View Styling */
         .course-list { display: flex; flex-direction: column; gap: 20px; }
         .course-item { background: white; border-radius: 15px; padding: 20px; border: 1px solid #e2e8f0; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
         .course-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
@@ -47,15 +47,6 @@
         .badge { display: inline-block; padding: 4px 8px; font-size: 11px; font-weight: bold; border-radius: 6px; margin-right: 5px; background: #f1f5f9; color: #475569; }
         .badge-gender { background: #edf2ff; color: #3b82f6; }
         .badge-designation { background: #f3e8ff; color: #8b5cf6; }
-        
-        /* Blueprint Rules Verification Display */
-        .verification-rules-box { margin-top: 15px; background: #fafafa; border-top: 1px dashed #e2e8f0; padding-top: 15px; }
-        .verification-rules-box h4 { font-size: 13px; color: #334155; margin-bottom: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .rule-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
-        .rule-preview-card { display: flex; gap: 10px; background: white; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; align-items: center; }
-        .rule-preview-card img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #cbd5e1; background: #f8fafc; cursor: pointer; }
-        .rule-details { font-size: 12px; color: #475569; line-height: 1.3; overflow: hidden; }
-        .rule-details b { display: block; color: #0f172a; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
 
         .btn-delete-course { background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; }
         .btn-delete-course:hover { background: #ef4444; color: white; }
@@ -70,7 +61,6 @@
         </div>
 
         <div class="main-grid">
-            <!-- Course Creation Panel -->
             <div class="card">
                 <h2>Configure New Course Pool</h2>
                 
@@ -110,13 +100,11 @@
                     </div>
                 </div>
 
-                <!-- Dynamic Files Mapping Section -->
                 <div class="form-group" style="margin-top: 10px;">
                     <label>Dynamic Files Mapping Requirements</label>
                     <div class="mapping-section">
                         <div id="mappingItemsContainer">
-                            <!-- Injected mapping rows -->
-                        </div>
+                            </div>
                         <button class="btn-add" id="addRuleRowBtn" type="button">+ Add Custom Upload Requirement Field</button>
                     </div>
                 </div>
@@ -124,7 +112,6 @@
                 <button class="btn-submit" id="submitCourseBtn">Deploy Course Infrastructure</button>
             </div>
 
-            <!-- Dashboard Matrix Grid Output Panel -->
             <div class="card">
                 <h2>Active Training Programs & Validation Configs</h2>
                 <div class="course-list" id="adminCoursesMatrixContainer">
@@ -164,7 +151,6 @@
                 <button type="button" class="btn-remove">Remove</button>
             `;
             
-            // Render inline dynamic image preview updates whenever administrative link input updates
             const linkInput = div.querySelector('.rule-image-input');
             const livePreviewWrapper = div.querySelector('.row-preview-wrapper');
             const livePreviewImg = div.querySelector('.row-preview-wrapper img');
@@ -208,61 +194,12 @@
             }
 
             container.innerHTML = liveCourseConfigsCached.map(course => {
-                let fileLabels = [];
-                let fileExamples = [];
-                try {
-                    fileLabels = Array.isArray(course.file_labels) ? course.file_labels : JSON.parse(course.file_labels || "[]");
-                    fileExamples = Array.isArray(course.file_examples) ? course.file_examples : JSON.parse(course.file_examples || "[]");
-                } catch(e) {
-                    fileLabels = [];
-                    fileExamples = [];
-                }
-
                 let designationBadges = '';
                 try {
                     const parsedDesignations = Array.isArray(course.target_designation) ? course.target_designation : JSON.parse(course.target_designation || "[]");
                     designationBadges = parsedDesignations.map(d => `<span class="badge badge-designation">${d}</span>`).join('');
                 } catch(e) {
                     designationBadges = `<span class="badge badge-designation">${course.target_designation || 'All'}</span>`;
-                }
-
-                let dynamicVerificationRulesMarkup = '';
-                if (fileLabels.length > 0) {
-                    let structuralRuleItems = '';
-                    for (let i = 0; i < fileLabels.length; i++) {
-                        const label = fileLabels[i];
-                        const imgUrl = fileExamples[i] || '';
-                        const fallbackImg = 'this.style.display="none"';
-                        
-                        const imageElement = imgUrl ? `
-                            <a href="${imgUrl}" target="_blank">
-                                <img src="${imgUrl}" alt="Blueprint Preview" onerror='${fallbackImg}'>
-                            </a>
-                        ` : `<div style="width:60px; height:60px; background:#e2e8f0; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:9px; color:#94a3b8; text-align:center; padding:2px;">No Image Rule</div>`;
-
-                        structuralRuleItems += `
-                            <div class="rule-preview-card">
-                                ${imageElement}
-                                <div class="rule-details">
-                                    <b>${label}</b>
-                                    <span>Rule ID: IDX-0${i+1}</span>
-                                </div>
-                            </div>
-                        `;
-                    }
-
-                    dynamicVerificationRulesMarkup = `
-                        <div class="verification-rules-box">
-                            <h4>Dynamic Verification Rules Parameters Matrix</h4>
-                            <div class="rule-grid">${structuralRuleItems}</div>
-                        </div>
-                    `;
-                } else {
-                    dynamicVerificationRulesMarkup = `
-                        <div class="verification-rules-box" style="color: #16a34a; font-size:12px; font-weight:bold;">
-                            ✅ This course profile does not require file upload parameter matches.
-                        </div>
-                    `;
                 }
 
                 return `
@@ -278,7 +215,6 @@
                             <span class="badge badge-gender">Sex Restriction: ${course.allowed_sex || 'Both'}</span>
                             ${designationBadges}
                         </div>
-                        ${dynamicVerificationRulesMarkup}
                     </div>
                 `;
             }).join('');
