@@ -23,22 +23,15 @@
         input, select, textarea { padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 15px; width: 100%; background: white; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: #2563eb; }
         
-        /* Dynamic Mapping Rules Layout */
         .mapping-section { background: #f8fafc; border: 1px dashed #cbd5e1; padding: 15px; border-radius: 12px; margin-top: 10px; }
-        .mapping-item { display: flex; gap: 15px; align-items: flex-start; margin-bottom: 10px; background: white; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .mapping-item { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
         .mapping-item input { padding: 8px; font-size: 14px; }
-        .btn-remove { background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; margin-top: 2px; }
+        .btn-remove { background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; }
         .btn-add { background: #10b981; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px; width: 100%; margin-top: 5px; }
         
-        /* Dynamic Input Row Image Display Rules */
-        .row-preview-wrapper { display: flex; gap: 10px; align-items: center; background: #f8fafc; border: 1px dashed #cbd5e1; padding: 8px; border-radius: 6px; margin-top: 4px; }
-        .row-preview-wrapper img { width: 45px; height: 45px; object-fit: cover; border-radius: 4px; border: 1px solid #cbd5e1; background: white; }
-        .row-preview-wrapper span { font-size: 11px; color: #64748b; }
-
         .btn-submit { background: linear-gradient(90deg, #2563eb, #7c3aed); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 20px; width: 100%; }
         .btn-submit:disabled { background: #cbd5e1; cursor: not-allowed; }
 
-        /* Original Course Matrix View Styling */
         .course-list { display: flex; flex-direction: column; gap: 20px; }
         .course-item { background: white; border-radius: 15px; padding: 20px; border: 1px solid #e2e8f0; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
         .course-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
@@ -103,8 +96,7 @@
                 <div class="form-group" style="margin-top: 10px;">
                     <label>Dynamic Files Mapping Requirements</label>
                     <div class="mapping-section">
-                        <div id="mappingItemsContainer">
-                            </div>
+                        <div id="mappingItemsContainer"></div>
                         <button class="btn-add" id="addRuleRowBtn" type="button">+ Add Custom Upload Requirement Field</button>
                     </div>
                 </div>
@@ -139,33 +131,11 @@
             div.className = 'mapping-item';
             div.id = rowId;
             div.innerHTML = `
-                <div style="flex:1; display:flex; flex-direction:column; gap:6px;">
-                    <input type="text" class="rule-label-input" placeholder="Document Label Name (e.g. BLS Certificate)" value="${labelText}" style="padding: 6px;">
-                    <input type="url" class="rule-image-input" placeholder="Blueprint Preview Reference URL (Optional Image Link)" value="${imageUrl}" style="padding: 6px; font-size:12px;">
-                    
-                    <div class="row-preview-wrapper" style="${imageUrl ? '' : 'display:none;'}">
-                        <img src="${imageUrl || ''}" alt="Blueprint Preview" onerror="this.parentElement.style.display='none'">
-                        <span>Live Preview Reference Guide</span>
-                    </div>
-                </div>
+                <input type="text" class="rule-label-input" placeholder="Document Label Name (e.g. BLS Certificate)" value="${labelText}" style="flex: 1;">
+                <input type="url" class="rule-image-input" placeholder="Blueprint Preview Reference URL" value="${imageUrl}" style="flex: 1;">
                 <button type="button" class="btn-remove">Remove</button>
             `;
             
-            const linkInput = div.querySelector('.rule-image-input');
-            const livePreviewWrapper = div.querySelector('.row-preview-wrapper');
-            const livePreviewImg = div.querySelector('.row-preview-wrapper img');
-            
-            linkInput.addEventListener('input', () => {
-                const url = linkInput.value.trim();
-                if (url) {
-                    livePreviewImg.src = url;
-                    livePreviewWrapper.style.display = 'flex';
-                } else {
-                    livePreviewWrapper.style.display = 'none';
-                    livePreviewImg.src = '';
-                }
-            });
-
             div.querySelector('.btn-remove').addEventListener('click', () => {
                 div.remove();
             });
@@ -300,7 +270,6 @@
         document.getElementById('addRuleRowBtn').addEventListener('click', () => addRuleRow('', ''));
         document.getElementById('submitCourseBtn').addEventListener('click', createNewCourseProfileSequence);
 
-        // Prepopulate default recommendations
         addRuleRow('Professional Registration License Copy', 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=400&q=80');
         addRuleRow('BLS Certificate (Valid)', '');
 
