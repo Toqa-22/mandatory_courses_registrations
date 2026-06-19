@@ -745,14 +745,36 @@
         })();
 
         window.clearForm = function() {
-            // Replace 'courseForm' with the actual ID of your form element
-            const form = document.getElementById('courseForm');
-            if (form) {
-                form.reset();
-                alert("Form fields cleared.");
-            } else {
-                console.error("Form not found");
+            // 1. Confirm with the user first
+            if (!confirm("⚠️ Are you sure you want to clear all fields? This action cannot be undone.")) {
+                return;
             }
+        
+            // 2. Reset the main form inputs
+            const form = document.getElementById('courseConfigForm');
+            form.reset();
+        
+            // 3. Reset visibility of hidden sections
+            document.getElementById('customDesignationsBox').classList.add('hidden-element');
+            document.getElementById('documentRulesConfigContainer').classList.add('hidden-element');
+        
+            // 4. Clear dynamic file rows (The "Append Dynamic Document Target Row" section)
+            const fileWrapper = document.getElementById('fileArrayWrapper');
+            if (fileWrapper) {
+                fileWrapper.innerHTML = '';
+            }
+        
+            // 5. Clear institutional allocations
+            const allocationWrapper = document.getElementById('allocationWrapper');
+            if (allocationWrapper) {
+                allocationWrapper.innerHTML = ''; // Or logic to reset your specific container
+            }
+        
+            // 6. Reset any custom select placeholders if necessary
+            document.getElementById('designationModeSelect').value = 'All';
+            document.getElementById('documentRequirementSelect').value = 'No';
+        
+            alert("Form cleared successfully.");
         };
     </script>
 </body>
