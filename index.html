@@ -55,6 +55,7 @@
         <p class="subtitle">Update configuration frameworks, structure labels, check seat arrays, and setup parameters.</p>
 
         <div class="grid-panel">
+            <!-- COURSE OPERATION MANAGER MODULE -->
             <div class="card-box">
                 <h2 id="formPanelTitle">Create New Managed Course</h2>
                 <button id="cancelEditBtn" class="btn-cancel style-chosen hidden-element">Cancel Edit Operational Mode</button>
@@ -81,13 +82,15 @@
                     <div class="array-group-box">
                         <h4 style="margin-bottom: 10px; color:#334155;">Institutional Allocations / Chair Mapping</h4>
                         <div class="allocation-container" id="allocationWrapper">
-                            </div>
+                            <!-- Injected programmatically by script execution loop -->
+                        </div>
                     </div>
 
                     <button type="submit" class="btn-primary-action" id="submitFormBtn">Push Action Configuration</button>
                 </form>
             </div>
 
+            <!-- REGISTRATIONS VIEWER -->
             <div class="card-box" style="display: flex; flex-direction: column;">
                 <h2>Live Transaction Registration Records</h2>
                 <div style="flex: 1; overflow-y: auto; max-height: 520px;" id="liveLogsContainer">
@@ -96,6 +99,7 @@
             </div>
         </div>
 
+        <!-- MAIN ACTIVE DISPLAY DATAGRID MATRIX -->
         <div class="list-table-container">
             <h2>Active Monitored Courses Array</h2>
             <div style="overflow-x: auto; margin-top: 20px;">
@@ -125,13 +129,12 @@
 
         const client = createClient(
             "https://pqgkdnxdsybcfamwadrf.supabase.co",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxZ2tkbnhkc3liY2ZhbXdhZHJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MzE0NjUsImV4cCI6MjA5NzEwNzQ2NX0.lugWuqNI5VMy6hCn-y38-hi825pIHcUjOCAWCsMJz4c"
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxZ2tkbnhkc3liY2ZhbXdhZHJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3IDE1MzE0NjUsImV4cCI6MjA5NzEwNzQ2NX0.lugWuqNI5VMy6hCn-y38-hi825pIHcUjOCAWCsMJz4c"
         );
 
         let editingCourseId = null;
         let globalInstitutionsList = [];
 
-        // Master List of Departments and Health Centers combined for full programmatic default assignments
         const masterInstitutionsAndDepartments = [
             "Al Mudhaibi Health Center", "Wadi Bani Khalid Hospital", "Sinaw Health Hospital",
             "Ibra Health Center", "Sinaw Health Center", "Al Yahmadi Health Center",
@@ -195,7 +198,6 @@
         async function reloadAdminConsoleDashboard() {
             await seedAndFetchMasterInstitutions();
             
-            // Fetch Course Matrix Configurations
             const { data: courses, error: errC } = await client.from('courses').select('*').order('id', { ascending: true });
             const tbody = document.getElementById('coursesMainTableBody');
             
@@ -223,12 +225,11 @@
                     `;
                 }).join('');
 
-                // Re-bind Action Elements Explicitly
                 document.querySelectorAll('.btn-tbl-edit').forEach(b => b.addEventListener('click', () => triggerEditOperationalMode(b.getAttribute('data-id'))));
                 document.querySelectorAll('.btn-tbl-delete').forEach(b => b.addEventListener('click', () => deleteTargetCourseTrack(b.getAttribute('data-id'))));
             }
 
-            // Fetch Live Transacted Registration Strings
+            // Fetch and match registrations page structure + gender display
             const { data: logs } = await client.from('registrations').select('*').order('created_at', { ascending: false });
             const logsContainer = document.getElementById('liveLogsContainer');
             if (!logs || logs.length === 0) {
@@ -238,7 +239,8 @@
                     <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:15px; margin-bottom:10px; font-size:13px; line-height:1.5;">
                         <div style="font-weight:bold; color:#0f172a; margin-bottom:4px;">${l.staff_name} (${l.staff_number})</div>
                         <div style="color:#475569;">Facility Snapshot: <b>${l.institution_name_snapshot}</b></div>
-                        <div style="color:#64748b;">Phone Target: ${l.phone_number || 'N/A'} | Specialization: ${l.specialization_snapshot || 'General'}</div>
+                        <div style="color:#64748b;">Phone Target: ${l.phone_number || 'N/A'} | Designation: <b>${l.designation_snapshot || 'N/A'}</b> | Specialization: ${l.specialization_snapshot || 'General'}</div>
+                        <div style="color:#64748b; margin-top:2px;">Sex: <span class="badge-info" style="background:#eff6ff; color:#2563eb; font-size:11px;">${l.sex_snapshot || 'N/A'}</span></div>
                         <div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:4px;">
                             ${(l.file_urls || []).map((url, i) => `<a href="${url}" target="_blank" class="badge-info" style="background:#eff6ff; color:#2563eb; text-decoration:none;">Doc #${i+1} Link ↗</a>`).join('')}
                         </div>
@@ -316,7 +318,6 @@
             const required_files = file_labels.length;
 
             if (editingCourseId) {
-                // UPDATE PIPELINE CACHING ENGINE
                 const { error: updErr } = await client.from('courses').update({
                     name, course_date, seats, required_files, file_labels, file_examples, allowed_sex
                 }).eq('id', editingCourseId);
@@ -326,14 +327,12 @@
                     return;
                 }
 
-                // Synchronize dynamic contextual allocations map
                 await client.from('course_institutions').delete().eq('course_id', editingCourseId);
                 await pushAllocationRecords(editingCourseId);
                 
                 alert("Course configurations updated successfully.");
                 exitEditOperationalMode();
             } else {
-                // INSERTION OPERATION
                 const { data: newCourse, error: insErr } = await client.from('courses').insert({
                     name, course_date, seats, required_files, file_labels, file_examples, allowed_sex
                 }).select().single();
@@ -374,14 +373,12 @@
             }
         }
 
-        // Global Dynamic Handler mapping to prevent window stack overflow scope leaks
         window.pushFileRuleInputRow = pushFileRuleInputRow;
 
         document.getElementById('addFileRuleRowBtn').addEventListener('click', () => pushFileRuleInputRow('', ''));
         document.getElementById('cancelEditBtn').addEventListener('click', exitEditOperationalMode);
         document.getElementById('courseConfigForm').addEventListener('submit', handleFormSubmission);
 
-        // Bootstrap Runtime Initialization Sequence
         (async function init() {
             await seedAndFetchMasterInstitutions();
             pushFileRuleInputRow('Required Document', '');
@@ -389,6 +386,5 @@
             await reloadAdminConsoleDashboard();
         })();
     </script>
-
 </body>
 </html>
