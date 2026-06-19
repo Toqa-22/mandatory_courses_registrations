@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course Management System Dashboard</title>
     <style>
+        .btn-clear { 
+            padding: 12px 24px; 
+            background: #64748b; 
+            color: white; 
+            border: none; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-weight: bold; 
+        }
+        .btn-clear:hover { background: #475569; }
+        
         .nav-buttons{
             display:flex;
             justify-content:center;
@@ -186,6 +197,7 @@
                     </div>
 
                     <button type="submit" class="btn-primary-action" id="submitFormBtn">Push Action Configuration</button>
+                    <button type="button" class="btn-clear" onclick="clearForm()">Clear Form</button>
                 </form>
             </div>
         </div>
@@ -701,6 +713,17 @@
             renderAllocationMappingFramework([]);
             await reloadAdminConsoleDashboard();
         })();
+
+        window.clearForm = function() {
+            // Replace 'courseForm' with the actual ID of your form element
+            const form = document.getElementById('courseForm');
+            if (form) {
+                form.reset();
+                alert("Form fields cleared.");
+            } else {
+                console.error("Form not found");
+            }
+        };
     </script>
 </body>
 </html>
