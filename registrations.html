@@ -114,7 +114,7 @@
                         <td>${r.phone_number || 'N/A'}</td>
                         <td>${r.staff_name}</td>
                         <td>${r.staff_number}</td>
-                        <td><span class="gender-badge">${r.gender || r.sex || 'N/A'}</span></td>
+                        <td><span class="gender-badge">${r.sex_snapshot || r.sex || 'N/A'}</span></td>
                         <td><span class="inst-badge">${r.institution_name_snapshot}</span></td>
                         <td><span class="course-badge">${r.course_name}</span></td>
                         <td>${r.course_date}</td>
@@ -171,7 +171,7 @@
                 `"\t${r.phone_number || ''}"`,
                 `"${r.staff_name}"`,
                 `"${r.staff_number}"`,
-                `"${r.gender || r.sex || 'N/A'}"`,
+                `"${r.sex_snapshot || r.sex || 'N/A'}"`,
                 `"${r.institution_name_snapshot}"`,
                 `"${r.course_name}"`,
                 r.course_date
