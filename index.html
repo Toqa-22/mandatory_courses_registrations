@@ -214,7 +214,6 @@
             <a class="btn-nav" href="registrations.html">
                 📋 Registration Table
             </a>
-       
         </div>
         
         <div class="grid-panel">
@@ -233,28 +232,23 @@
                         <select id="courseGender" required>
                             <option value="Both">Target Sex: Both</option>
                             <option value="Male">Male Only</option>
-           
                             <option value="Female">Female Only</option>
                         </select>
                     </div>
 
                     <div class="array-group-box">
-                
                         <h4 style="margin-bottom: 5px; color:#334155;">Target Designations</h4>
                         <select id="designationModeSelect" style="margin-bottom: 10px;" required>
                             <option value="All">All Designations Allowed</option>
                             <option value="Custom">Choose Specific Designations...</option>
-         
                         </select>
                         <div id="customDesignationsBox" class="hidden-element" style="background: white; border: 1px solid #d1d5db; border-radius: 12px; padding: 15px;">
                             <p style="font-size: 13px; color: #64748b; margin-bottom: 10px;">Target designation:</p>
                             <div class="designation-grid">
                                 <label class="designation-item"><input type="checkbox" class="desig-checkbox" value="Nurse"> Nurse</label>
-                              
                                 <label class="designation-item"><input type="checkbox" class="desig-checkbox" value="Physician"> Physician</label>
                                 <label class="designation-item"><input type="checkbox" class="desig-checkbox" value="Technician"> Technician</label>
                                 <label class="designation-item"><input type="checkbox" class="desig-checkbox" value="Other"> Other</label>
-                   
                             </div>
                         </div>
                     </div>
@@ -264,25 +258,21 @@
                         <select id="documentRequirementSelect" style="margin-bottom: 10px;" required>
                             <option value="No">No</option>
                             <option value="Yes">Yes</option>
-            
                         </select>
                         
                         <div id="documentRulesConfigContainer" class="hidden-element">
                             <div id="fileArrayWrapper"></div>
-         
                             <button type="button" class="btn-action btn-add" id="addFileRuleRowBtn" style="margin-top: 5px;">+ Append Dynamic Document Target Row</button>
                         </div>
                     </div>
 
                     <div class="array-group-box">
-     
                         <h4 style="margin-bottom: 10px; color:#334155;">Institutional Allocations / Chair Mapping</h4>
                         
                         <div class="allocation-controls">
                             <select id="allocationFilterSelect" style="padding: 10px; font-size: 13px;">
                                 <option value="ALL">...Institutions Restrictions Options...</option>
                                 <option value="IBRA">Ibra Hospital Institutions Restrictions Only</option>
-                           
                                 <option value="OTHER">Other Institutions Restrictions Only</option>
                             </select>
                             <select id="allocationBulkSelectAction" style="padding: 10px; font-size: 13px;">
@@ -295,7 +285,6 @@
                         </div>
 
                         <div class="allocation-bulk-row">
-               
                             <input type="number" id="bulkSeatsCountInput" placeholder="Bulk Chairs Value (e.g. 3)" min="0" style="padding: 10px; font-size: 13px;">
                             <select id="bulkSeatsTargetFilter" style="padding: 10px; font-size: 13px; max-width: 180px;">
                                 <option value="VISIBLE">Apply to Visible & Checked</option>
@@ -305,6 +294,7 @@
                             <button type="button" class="btn-action btn-add" id="applyBulkSeatsBtn">Apply Bulk Seats</button>
                         </div>
 
+                        <!-- Split Containers into Ibra and Other -->
                         <div id="ibraSectionBox" style="margin-bottom: 15px;">
                             <h5 style="font-size: 13px; color: #475569; margin-bottom: 6px; font-weight: bold;">Ibra Settings</h5>
                             <div class="allocation-container" id="allocationWrapperIbra"></div>
@@ -314,17 +304,18 @@
                             <h5 style="font-size: 13px; color: #475569; margin-bottom: 6px; font-weight: bold;">Other Settings</h5>
                             <div class="allocation-container" id="allocationWrapperOther"></div>
                         </div>
-               
                     </div>
 
-                    <div class="button-group">
-                        <button type="button" class="btn-flex btn-preset" id="loadBlsPresetBtn">Load BLS Info Template</button>
-                        <button type="button" class="btn-flex btn-preset" id="loadAclsPresetBtn">Load ACLS Info Template</button>
-                    </div>
-
+                    <!-- Primary Actions Row -->
                     <div class="button-group">
                         <button type="submit" class="btn-flex btn-primary-action" id="submitFormBtn">Save</button>
                         <button type="button" class="btn-flex btn-secondary" onclick="clearForm()">Clear Form</button>
+                    </div>
+
+                    <!-- Template Presets Row Under Save/Clear Buttons -->
+                    <div class="button-group">
+                        <button type="button" class="btn-flex btn-preset" id="loadBlsPresetBtn">Load BLS Info Template</button>
+                        <button type="button" class="btn-flex btn-preset" id="loadAclsPresetBtn">Load ACLS Info Template</button>
                     </div>
                     
                 </form>
@@ -338,16 +329,13 @@
                     <thead>
                         <tr>
                             <th>Course Name</th>
-          
                             <th>Target Date</th>
                             <th>Chairs Available</th>
                             <th>Target Criteria</th>
-                       
                             <th>Dynamic Files Mapping Requirements</th>
                             <th>Operations Control</th>
                         </tr>
                     </thead>
-                   
                     <tbody id="coursesMainTableBody">
                         <tr>
                             <td colspan="6" style="color: #64748b; text-align: center;">Refreshing active configuration modules...</td>
@@ -359,7 +347,6 @@
     </div>
 
     <script type="module">
-       
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
         const client = createClient(
@@ -376,20 +363,18 @@
             "Al Mudhaibi Health Center (New)", "Samad Al Shaan Hospital", "Bidiyah Hospital",
             "Al Qabil Health Center", "Wadi Dama Wa At Taiyyin Hospital", "Al Dhahir Health Center",
             "Al Jaza Health Center", "Sumayyan Health Center", "Al Jardaa Health Center",
-      
             "Al Aflaj Health Center", "Miss Health Centre",
             "Ibra - Emergency Department Doctor", "Ibra - Emergency Department Nurse", "Ibra - Internal Medicine Department", 
             "Ibra - General Surgery Department", "Ibra - Paediatrician", "Ibra - Obstetrics and Gynecology Department", 
             "Ibra - Orthopedics Department", "Ibra - Ophthalmology Department", "Ibra - ENT Department", 
-           
             "Ibra - Anesthesia Department", "Ibra - Dialysis Unit", "Ibra - Radiology Department", 
             "Ibra - Laboratory Department", "Ibra - Physiotherapy Department", "Ibra - Clinical Nutrition Department", 
             "Ibra - Pharmacy Department", "Ibra - Male Medical and Surgical Ward", "Ibra - Female Medical and Surgical Ward", 
             "Ibra - Pediatrics Ward", "Ibra - Obstetrics and Gynecology Ward", "Ibra - Adult Intensive Care Unit (ICU)", 
-   
             "Ibra - Special Care Baby Unit (SCBU)", "Ibra - OPD", "Ibra - Nephrologist", "Ibra - DS Nurse", 
             "Ibra - OT Nurse", "Ibra - RT"
         ];
+
         function pushFileRuleInputRow(labelVal = '', exampleVal = '') {
             const wrapper = document.getElementById('fileArrayWrapper');
             const row = document.createElement('div');
@@ -405,7 +390,6 @@
                 <div style="display: flex; gap: 10px; align-items: center; width: 100%;">
                     <input type="text" class="file-label-item" placeholder="Document Label (e.g. ACLS Card)" value="${labelVal}" required style="flex: 1;">
                     <input type="text" class="file-example-item" placeholder="Reference Guide Image URL" value="${exampleVal}" style="flex: 1;">
-              
                     <button type="button" class="btn-remove">✕</button>
                 </div>
                 <div class="row-image-preview-box" style="margin-top: 8px; display: ${exampleVal ? 'block' : 'none'};">
@@ -421,7 +405,6 @@
                 if (url) {
                     previewImg.src = url;
                     previewBox.style.display = 'block';
-                
                 } else {
                     previewBox.style.display = 'none';
                     previewImg.src = '';
@@ -577,38 +560,78 @@
 
         /* Preset Template Loader Logic */
         function loadCoursePreset(type) {
+            // Setup automated dates helper
+            const today = new Date();
+            today.setDate(today.getDate() + 30); // Default to a month from now
+            const defaultDateString = today.toISOString().split('T')[0];
+
             if (type === 'BLS') {
                 document.getElementById('courseName').value = 'BLS';
+                document.getElementById('courseDate').value = defaultDateString;
                 document.getElementById('courseSeats').value = '30';
                 document.getElementById('courseGender').value = 'Both';
+                
+                // Target Criteria: Designations Allowed
                 document.getElementById('designationModeSelect').value = 'All';
                 document.getElementById('customDesignationsBox').classList.add('hidden-element');
+                document.querySelectorAll('.desig-checkbox').forEach(cb => cb.checked = false);
                 
-                // Set attachment files configuration
+                // Dynamic Files Mapping
                 document.getElementById('documentRequirementSelect').value = 'Yes';
                 document.getElementById('documentRulesConfigContainer').classList.remove('hidden-element');
                 document.getElementById('fileArrayWrapper').innerHTML = '';
-                pushFileRuleInputRow('BLS Certificate / Card', '');
+                pushFileRuleInputRow('BLS Certificate / Card', 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=150');
+
+                // Institutional Allocations Pre-configurations
+                const allItems = document.querySelectorAll('.allocation-item');
+                allItems.forEach(item => {
+                    const checkbox = item.querySelector('.inst-checkbox-target');
+                    const slotsInput = item.querySelector('.inst-slots-target');
+                    const cat = item.getAttribute('data-category');
+                    if(checkbox && slotsInput) {
+                        checkbox.checked = true;
+                        slotsInput.value = (cat === 'IBRA') ? '5' : '2';
+                    }
+                });
+
             } else if (type === 'ACLS') {
                 document.getElementById('courseName').value = 'ACLS';
+                document.getElementById('courseDate').value = defaultDateString;
                 document.getElementById('courseSeats').value = '15';
                 document.getElementById('courseGender').value = 'Both';
+                
+                // Target Criteria: Custom Designations Criteria Setup
                 document.getElementById('designationModeSelect').value = 'Custom';
                 document.getElementById('customDesignationsBox').classList.remove('hidden-element');
-                
-                // Select specific roles for ACLS typically
                 document.querySelectorAll('.desig-checkbox').forEach(cb => {
                     cb.checked = (cb.value === 'Physician' || cb.value === 'Nurse');
                 });
 
-                // Set attachment files configuration
+                // Dynamic Files Mapping Setup
                 document.getElementById('documentRequirementSelect').value = 'Yes';
                 document.getElementById('documentRulesConfigContainer').classList.remove('hidden-element');
                 document.getElementById('fileArrayWrapper').innerHTML = '';
-                pushFileRuleInputRow('ACLS Certificate / Card', '');
-                pushFileRuleInputRow('BLS Certificate (Prerequisite)', '');
+                pushFileRuleInputRow('ACLS Certificate / Card', 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=150');
+                pushFileRuleInputRow('BLS Certificate (Prerequisite)', 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=150');
+
+                // Institutional Allocations Pre-configurations
+                const allItems = document.querySelectorAll('.allocation-item');
+                allItems.forEach(item => {
+                    const checkbox = item.querySelector('.inst-checkbox-target');
+                    const slotsInput = item.querySelector('.inst-slots-target');
+                    const cat = item.getAttribute('data-category');
+                    if(checkbox && slotsInput) {
+                        if(cat === 'IBRA') {
+                            checkbox.checked = true;
+                            slotsInput.value = '3';
+                        } else {
+                            checkbox.checked = false; // Restrict outside institutions for ACLS by default
+                            slotsInput.value = '0';
+                        }
+                    }
+                });
             }
-            alert(`${type} Template Data Loaded! You can modify fields or just change the Target Date before clicking Save.`);
+            alert(`${type} Full Template Framework Loaded successfully with complete criteria details.`);
         }
 
         document.getElementById('designationModeSelect').addEventListener('change', (e) => {
@@ -647,9 +670,7 @@
                         } else if (typeof c.file_labels === 'string') {
                             fileLabels = JSON.parse(c.file_labels);
                         }
-                    } catch (e) {
-                        fileLabels = [];
-                    }
+                    } catch (e) { fileLabels = []; }
  
                     try {
                         if (Array.isArray(c.file_examples)) {
@@ -657,9 +678,7 @@
                         } else if (typeof c.file_examples === 'string') {
                             fileExamples = JSON.parse(c.file_examples);
                         }
-                    } catch (e) {
-                        fileExamples = [];
-                    }
+                    } catch (e) { fileExamples = []; }
 
                     if (!Array.isArray(fileLabels)) fileLabels = [];
                     if (!Array.isArray(fileExamples)) fileExamples = [];
@@ -691,8 +710,7 @@
                         } else if (typeof c.allowed_designations === 'string' && c.allowed_designations.trim() !== '') {
                             desigArr = JSON.parse(c.allowed_designations);
                         }
-                    } catch(e) { desigArr = [];
-                    }
+                    } catch(e) { desigArr = []; }
 
                     const desigMarkup = (!desigArr || desigArr.length === 0 || desigArr.includes('All')) 
                         ? `<span class="badge-info" style="background:#f0fdf4; color:#16a34a;">All Roles</span>`
@@ -739,8 +757,7 @@
                 } else if (typeof course.allowed_designations === 'string' && course.allowed_designations.trim() !== '') {
                     desigArr = JSON.parse(course.allowed_designations);
                 }
-            } catch(e) { desigArr = [];
-            }
+            } catch(e) { desigArr = []; }
 
             const modeSelect = document.getElementById('designationModeSelect');
             const box = document.getElementById('customDesignationsBox');
@@ -882,7 +899,6 @@
                 await pushAllocationRecords(newCourse.id);
                 alert("New managed course added successfully.");
                 
-                // Clear course name & properties but keep form populated so user can quickly swap date/details for multi-generation
                 document.getElementById('courseDate').value = '';
             }
 
@@ -898,7 +914,6 @@
                     const instId = Number(chk.getAttribute('data-id'));
                     const currentCount = parseInt(chk.getAttribute('data-current-count'), 10) || 0;
                     const slotsInput = document.querySelector(`.inst-slots-target[data-id="${instId}"]`);
-    
                     const max_slots = slotsInput ? parseInt(slotsInput.value, 10) || 1 : 1;
                     
                     allocationRows.push({
@@ -907,7 +922,6 @@
                         max_slots: max_slots,
                         registered_count: currentCount
                     });
-              
                 }
             });
             if (allocationRows.length > 0) {
@@ -947,22 +961,13 @@
             document.getElementById('documentRulesConfigContainer').classList.add('hidden-element');
         
             const fileWrapper = document.getElementById('fileArrayWrapper');
-            if (fileWrapper) {
-                fileWrapper.innerHTML = '';
-            }
-        
-            const allocationWrapperIbra = document.getElementById('allocationWrapperIbra');
-            if (allocationWrapperIbra) {
-                allocationWrapperIbra.innerHTML = '';
-            }
-            const allocationWrapperOther = document.getElementById('allocationWrapperOther');
-            if (allocationWrapperOther) {
-                allocationWrapperOther.innerHTML = '';
-            }
+            if (fileWrapper) { fileWrapper.innerHTML = ''; }
         
             document.getElementById('designationModeSelect').value = 'All';
             document.getElementById('documentRequirementSelect').value = 'No';
-        
+            
+            // Re-render empty selection map
+            renderAllocationMappingFramework([]);
             alert("Form cleared successfully.");
         };
     </script>
