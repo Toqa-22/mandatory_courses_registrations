@@ -170,13 +170,13 @@
                     </div>
 
                     <div class="array-group-box">
-                        <h4 style="margin-bottom: 5px; color:#334155;">Target Selection Mapping: Designations</h4>
+                        <h4 style="margin-bottom: 5px; color:#334155;">Target Designations</h4>
                         <select id="designationModeSelect" style="margin-bottom: 10px;" required>
                             <option value="All">All Designations Allowed</option>
                             <option value="Custom">Choose Specific Designations...</option>
                         </select>
                         <div id="customDesignationsBox" class="hidden-element" style="background: white; border: 1px solid #d1d5db; border-radius: 12px; padding: 15px;">
-                            <p style="font-size: 13px; color: #64748b; margin-bottom: 10px;">Select allowed target roles:</p>
+                            <p style="font-size: 13px; color: #64748b; margin-bottom: 10px;">Target designation:</p>
                             <div class="designation-grid">
                                 <label class="designation-item"><input type="checkbox" class="desig-checkbox" value="Nurse"> Nurse</label>
                                 <label class="designation-item"><input type="checkbox" class="desig-checkbox" value="Physician"> Physician</label>
@@ -187,10 +187,10 @@
                     </div>
 
                     <div class="array-group-box">
-                        <h4 style="margin-bottom: 5px; color:#334155;">Dynamic File Rules Verification Parameters</h4>
+                        <h4 style="margin-bottom: 5px; color:#334155;">Attatchment file</h4>
                         <select id="documentRequirementSelect" style="margin-bottom: 10px;" required>
-                            <option value="No">Require Documents for Registration? No</option>
-                            <option value="Yes">Require Documents for Registration? Yes</option>
+                            <option value="No">No</option>
+                            <option value="Yes">Yes</option>
                         </select>
                         
                         <div id="documentRulesConfigContainer" class="hidden-element">
@@ -224,7 +224,7 @@
                     </div>
 
                     <div class="button-group">
-                        <button type="submit" class="btn-flex btn-primary-action" id="submitFormBtn">Push Action Configuration</button>
+                        <button type="submit" class="btn-flex btn-primary-action" id="submitFormBtn">Save</button>
                         <button type="button" class="btn-flex btn-secondary" onclick="clearForm()">Clear Form</button>
                     </div>
                     
