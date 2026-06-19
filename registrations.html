@@ -172,7 +172,7 @@
 
         window.exportCSV = function () {
             if (allData.length === 0) return alert("No records found.");
-            const headers = ['#', 'Phone Number', 'Staff Name', 'Staff Number', 'Gender', 'Institution Origin', 'Course Name', 'Course Date', 'Attachments'];
+            const headers = ['#', 'Phone Number', 'Staff Name', 'Staff Number', 'Gender', 'Institution Origin', 'Course Name', 'Course Date'];
             const rows = allData.map((r, i) => [
                 i + 1,
                 `"\t${r.phone_number || ''}"`,
@@ -181,8 +181,7 @@
                 `"${r.sex || 'N/A'}"`,
                 `"${r.institution_name_snapshot}"`,
                 `"${r.course_name}"`,
-                r.course_date,
-                `"${(r.file_urls || []).join(' | ')}"`
+                r.course_date
             ]);
             const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
