@@ -1,533 +1,374 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course Management System Dashboard</title>
-    <style>
-        .nav-buttons{
-            display:flex;
-            justify-content:center;
-            margin:25px 0 40px;
-        }
-        
-        .btn-nav{
-            display:inline-flex;
-            align-items:center;
-            gap:10px;
-            padding:15px 35px;
-            background:linear-gradient(135deg,#2563eb,#7c3aed);
-            color:#fff;
-            text-decoration:none;
-            font-size:17px;
-            font-weight:bold;
-            border-radius:50px;
-            box-shadow:0 8px 20px rgba(37,99,235,.25);
-            transition:all .3s ease;
-        }
-        
-        .btn-nav:hover{
-            transform:translateY(-4px);
-            box-shadow:0 14px 30px rgba(37,99,235,.35);
-            background:linear-gradient(135deg,#1d4ed8,#6d28d9);
-        }
-        
-        .btn-nav:active{
-            transform:scale(.97);
-        }
-        
-        .btn-nav::after{
-            content:"→";
-            font-size:18px;
-            transition:transform .3s;
-        }
-        
-        .btn-nav:hover::after{
-            transform:translateX(6px);
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-        body { background: #f4f7fc; min-height: 100vh; padding: 40px 20px; }
-        .container { max-width: 1200px; margin: auto; }
-        .title { text-align: center; font-size: 50px; color: #0f172a; margin-bottom: 15px; }
-        .subtitle { text-align: center; color: #64748b; margin-bottom: 40px; }
-        .grid-panel { display: grid; grid-template-columns: 1fr; gap: 30px; margin-bottom: 40px; }
-        .card-box { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, .08); display: flex; flex-direction: column; }
-        .card-box h2 { margin-bottom: 25px; color: #0f172a; font-size: 24px; display: flex; justify-content: space-between; align-items: center; }
-        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-        input, select { width: 100%; padding: 14px; border: 1px solid #d1d5db; border-radius: 12px; font-size: 15px; background-color: white; }
-        input:focus, select:focus { outline: none; border-color: #2563eb; }
-        .full-width { grid-column: 1 / -1; }
-        
-        .array-group-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 15px; margin-bottom: 15px; }
-        .array-item-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
-        
-        .btn-action { padding: 12px 20px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; }
-        .btn-add { background: #eff6ff; color: #2563eb; }
-        .btn-add:hover { background: #dbeafe; }
-        .btn-remove { background: #fef2f2; color: #dc2626; padding: 14px; border-radius: 12px; border: none; cursor: pointer; }
-        .btn-remove:hover { background: #fee2e2; }
-        
-        .btn-primary-action { width: 100%; padding: 16px; background: linear-gradient(90deg, #2563eb, #7c3aed); border: none; color: white; font-size: 16px; border-radius: 12px; cursor: pointer; font-weight: bold; }
-        .btn-cancel { background: #e2e8f0; color: #334155; margin-bottom: 15px; width: 100%; padding: 12px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Management System - Admin Control Panel</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { background: #f1f5f9; min-height: 100vh; padding: 40px 20px; color: #0f172a; }
+        .container { max-width: 1300px; margin: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .title { font-size: 32px; font-weight: bold; }
+        
+        .main-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; align-items: start; }
+        @media(max-width: 1024px) { .main-grid { grid-template-columns: 1fr; } }
+        
+        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .card h2 { margin-bottom: 20px; font-size: 20px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
+        
+        .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        label { font-size: 14px; font-weight: bold; color: #475569; }
+        input, select, textarea { padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 15px; width: 100%; background: white; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #2563eb; }
+        
+        /* Dynamic Mapping Rules Layout */
+        .mapping-section { background: #f8fafc; border: 1px dashed #cbd5e1; padding: 15px; border-radius: 12px; margin-top: 10px; }
+        .mapping-item { display: flex; gap: 15px; align-items: flex-start; margin-bottom: 10px; background: white; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .mapping-item input { padding: 8px; font-size: 14px; }
+        .btn-remove { background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; margin-top: 2px; }
+        .btn-add { background: #10b981; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px; width: 100%; margin-top: 5px; }
+        
+        /* Dynamic Input Row Image Display Rules */
+        .row-preview-wrapper { display: flex; gap: 10px; align-items: center; background: #f8fafc; border: 1px dashed #cbd5e1; padding: 8px; border-radius: 6px; margin-top: 4px; }
+        .row-preview-wrapper img { width: 45px; height: 45px; object-fit: cover; border-radius: 4px; border: 1px solid #cbd5e1; background: white; }
+        .row-preview-wrapper span { font-size: 11px; color: #64748b; }
 
-        .list-table-container { background: white; border-radius: 30px; padding: 40px; box-shadow: 0 10px 30px rgba(0, 0, 0, .08); overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 16px; border-bottom: 1px solid #e2e8f0; font-size: 15px; }
-        th { color: #475569; font-weight: bold; background: #f8fafc; }
-        td { color: #0f172a; }
-        
-        .badge-info { display: inline-block; padding: 4px 10px; background: #f1f5f9; border-radius: 6px; font-size: 12px; font-weight: bold; margin: 2px; color: #475569; }
-        .action-cell { display: flex; gap: 8px; }
-        .btn-tbl-edit { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .btn-tbl-edit:hover { background: #dcfce7; }
-        .btn-tbl-delete { background: #fff5f5; color: #e53e3e; border: 1px solid #fed7d7; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .btn-tbl-delete:hover { background: #fee2e2; }
-        
-        .allocation-controls { display: flex; gap: 10px; margin-bottom: 12px; }
-        .allocation-bulk-row { display: flex; gap: 10px; margin-bottom: 15px; }
-        .allocation-bulk-row input { flex: 1; }
-        .allocation-bulk-row button { white-space: nowrap; font-size: 13px; }
-        .allocation-container { max-height: 200px; overflow-y: auto; border: 1px solid #d1d5db; border-radius: 12px; padding: 10px; background: white; }
-        .allocation-item { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #e2e8f0; }
-        .allocation-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
-        .allocation-item.hidden-element { display: none !important; }
-        .allocation-item label { font-size: 13px; color: #334155; display: flex; align-items: center; gap: 6px; width: 60%; cursor: pointer; }
-        .allocation-item input[type="number"] { width: 35%; padding: 6px; font-size: 13px; border-radius: 6px; }
-        
-        .hidden-element { display: none !important; }
-    </style>
+        .btn-submit { background: linear-gradient(90deg, #2563eb, #7c3aed); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 20px; width: 100%; }
+        .btn-submit:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+        /* Course Matrix View */
+        .course-list { display: flex; flex-direction: column; gap: 20px; }
+        .course-item { background: white; border-radius: 15px; padding: 20px; border: 1px solid #e2e8f0; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .course-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .course-title-block h3 { font-size: 20px; color: #1e3a8a; }
+        .course-meta { font-size: 13px; color: #64748b; margin-top: 4px; }
+        .badge { display: inline-block; padding: 4px 8px; font-size: 11px; font-weight: bold; border-radius: 6px; margin-right: 5px; background: #f1f5f9; color: #475569; }
+        .badge-gender { background: #edf2ff; color: #3b82f6; }
+        .badge-designation { background: #f3e8ff; color: #8b5cf6; }
+        
+        /* Blueprint Rules Verification Display */
+        .verification-rules-box { margin-top: 15px; background: #fafafa; border-top: 1px dashed #e2e8f0; padding-top: 15px; }
+        .verification-rules-box h4 { font-size: 13px; color: #334155; margin-bottom: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .rule-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+        .rule-preview-card { display: flex; gap: 10px; background: white; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; align-items: center; }
+        .rule-preview-card img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #cbd5e1; background: #f8fafc; cursor: pointer; }
+        .rule-details { font-size: 12px; color: #475569; line-height: 1.3; overflow: hidden; }
+        .rule-details b { display: block; color: #0f172a; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
+
+        .btn-delete-course { background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; }
+        .btn-delete-course:hover { background: #ef4444; color: white; }
+    </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1 class="title">Course Management System Dashboard</h1>
-        <p class="subtitle">Update configuration frameworks, structure labels, check seat arrays, and setup parameters.</p>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Admin Management Control Center</h1>
+            <div style="font-size: 14px; color: #64748b; font-weight: bold;">System Platform Configuration Pool</div>
+        </div>
 
-        <div class="nav-buttons">
-            <a class="btn-nav" href="registrations.html">
-                📋 Registration Table
-            </a>
-        </div>
-        
-        <div class="grid-panel">
-            <div class="card-box">
-                <h2 id="formPanelTitle">Create New Managed Course</h2>
-                <button id="cancelEditBtn" class="btn-cancel style-chosen hidden-element">Cancel Edit Operational Mode</button>
-                <form id="courseConfigForm">
-                    <div class="input-row">
-                        <input type="text" id="courseName" placeholder="Course Name (e.g. BLS)" required>
-                        <input type="date" id="courseDate" required>
-                    </div>
-                    <div class="input-row">
-                        <input type="number" id="courseSeats" placeholder="Chairs Limit (e.g. 5)" min="0" required>
-                        <select id="courseGender" required>
-                            <option value="Both">Target Sex: Both (Default)</option>
-                            <option value="Male">Male Only</option>
-                            <option value="Female">Female Only</option>
-                        </select>
-                    </div>
+        <div class="main-grid">
+            <!-- Course Creation Panel -->
+            <div class="card">
+                <h2>Configure New Course Pool</h2>
+                
+                <div class="form-group">
+                    <label for="courseName">Course Event Title</label>
+                    <input type="text" id="courseName" placeholder="e.g. Advanced Cardiac Life Support">
+                </div>
 
-                    <div class="array-group-box">
-                        <h4 style="margin-bottom: 10px; color:#334155;">Dynamic File Rules Verification Parameters</h4>
-                        <div id="fileArrayWrapper"></div>
-                        <button type="button" class="btn-action btn-add" id="addFileRuleRowBtn" style="margin-top: 5px;">+ Append Dynamic Document Target Row</button>
-                    </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="courseDate">Session Date</label>
+                        <input type="date" id="courseDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="totalSeats">Total Room Chairs</label>
+                        <input type="number" id="totalSeats" placeholder="0" min="1">
+                    </div>
+                </div>
 
-                    <div class="array-group-box">
-                        <h4 style="margin-bottom: 10px; color:#334155;">Institutional Allocations / Chair Mapping</h4>
-                        
-                        <div class="allocation-controls">
-                            <select id="allocationFilterSelect" style="padding: 10px; font-size: 13px;">
-                                <option value="ALL">Show All Options</option>
-                                <option value="IBRA">Ibra Departments Only</option>
-                                <option value="OTHER">Other Institutions Only</option>
-                            </select>
-                            <select id="allocationBulkSelectAction" style="padding: 10px; font-size: 13px;">
-                                <option value="">-- Bulk Select Toggles --</option>
-                                <option value="ALL">Select All Visible</option>
-                                <option value="NONE">Deselect All Visible</option>
-                            </select>
-                        </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="allowedSex">Gender Filters Restriction</label>
+                        <select id="allowedSex">
+                            <option value="Both">Both (No Restrictions)</option>
+                            <option value="Male">Male Only</option>
+                            <option value="Female">Female Only</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="targetDesignations">Allowed Designation Rule</label>
+                        <select id="targetDesignations" multiple style="height: 78px; padding: 6px;">
+                            <option value="Nurse" selected>Nurse</option>
+                            <option value="Physician" selected>Physician</option>
+                            <option value="Technician" selected>Technician</option>
+                        </select>
+                        <span style="font-size:10px; color:#64748b; margin-top:2px;">Hold Ctrl / Cmd to clear or select multiple options</span>
+                    </div>
+                </div>
 
-                        <div class="allocation-bulk-row">
-                            <input type="number" id="bulkSeatsCountInput" placeholder="Bulk Chairs Value (e.g. 3)" min="0" style="padding: 10px; font-size: 13px;">
-                            <button type="button" class="btn-action btn-add" id="applyBulkSeatsBtn">Apply Bulk Seats</button>
-                        </div>
+                <!-- Dynamic Files Mapping Section -->
+                <div class="form-group" style="margin-top: 10px;">
+                    <label>Dynamic Files Mapping Requirements</label>
+                    <div class="mapping-section">
+                        <div id="mappingItemsContainer">
+                            <!-- Injected mapping rows -->
+                        </div>
+                        <button class="btn-add" id="addRuleRowBtn" type="button">+ Add Custom Upload Requirement Field</button>
+                    </div>
+                </div>
 
-                        <div class="allocation-container" id="allocationWrapper"></div>
-                    </div>
+                <button class="btn-submit" id="submitCourseBtn">Deploy Course Infrastructure</button>
+            </div>
 
-                    <button type="submit" class="btn-primary-action" id="submitFormBtn">Push Action Configuration</button>
-                </form>
-            </div>
-        </div>
+            <!-- Dashboard Matrix Grid Output Panel -->
+            <div class="card">
+                <h2>Active Training Programs & Validation Configs</h2>
+                <div class="course-list" id="adminCoursesMatrixContainer">
+                    <div style="color: #64748b; text-align: center; padding: 40px;">Fetching global configuration logs matrices...</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <div class="list-table-container">
-            <h2>Active Monitored Courses Array</h2>
-            <div style="overflow-x: auto; margin-top: 20px;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Course Name</th>
-                            <th>Target Date</th>
-                            <th>Chairs Available</th>
-                            <th>Allowed Sex</th>
-                            <th>Dynamic Files Mapping Requirements</th>
-                            <th>Operations Control</th>
-                        </tr>
-                    </thead>
-                    <tbody id="coursesMainTableBody">
-                        <tr>
-                            <td colspan="6" style="color: #64748b; text-align: center;">Refreshing active configuration modules...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-    <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        const client = createClient(
+            "https://pqgkdnxdsybcfamwadrf.supabase.co",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxZ2tkbnhkc3liY2ZhbXdhZHJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MzE0NjUsImV4cCI6MjA5NzEwNzQ2NX0.lugWuqNI5VMy6hCn-y38-hi825pIHcUjOCAWCsMJz4c"
+        );
 
-        const client = createClient(
-            "https://pqgkdnxdsybcfamwadrf.supabase.co",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxZ2tkbnhkc3liY2ZhbXdhZHJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MzE0NjUsImV4cCI6MjA5NzEwNzQ2NX0.lugWuqNI5VMy6hCn-y38-hi825pIHcUjOCAWCsMJz4c"
-        );
+        let liveCourseConfigsCached = [];
 
-        let editingCourseId = null;
-        let globalInstitutionsList = [];
+        function addRuleRow(labelText = '', imageUrl = '') {
+            const container = document.getElementById('mappingItemsContainer');
+            const rowId = 'rule_row_' + Date.now() + Math.random().toString(36).substring(7);
+            
+            const div = document.createElement('div');
+            div.className = 'mapping-item';
+            div.id = rowId;
+            div.innerHTML = `
+                <div style="flex:1; display:flex; flex-direction:column; gap:6px;">
+                    <input type="text" class="rule-label-input" placeholder="Document Label Name (e.g. BLS Certificate)" value="${labelText}" style="padding: 6px;">
+                    <input type="url" class="rule-image-input" placeholder="Blueprint Preview Reference URL (Optional Image Link)" value="${imageUrl}" style="padding: 6px; font-size:12px;">
+                    
+                    <div class="row-preview-wrapper" style="${imageUrl ? '' : 'display:none;'}">
+                        <img src="${imageUrl || ''}" alt="Blueprint Preview" onerror="this.parentElement.style.display='none'">
+                        <span>Live Preview Reference Guide</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-remove">Remove</button>
+            `;
+            
+            // Render inline dynamic image preview updates whenever administrative link input updates
+            const linkInput = div.querySelector('.rule-image-input');
+            const livePreviewWrapper = div.querySelector('.row-preview-wrapper');
+            const livePreviewImg = div.querySelector('.row-preview-wrapper img');
+            
+            linkInput.addEventListener('input', () => {
+                const url = linkInput.value.trim();
+                if (url) {
+                    livePreviewImg.src = url;
+                    livePreviewWrapper.style.display = 'flex';
+                } else {
+                    livePreviewWrapper.style.display = 'none';
+                    livePreviewImg.src = '';
+                }
+            });
 
-        const masterInstitutionsAndDepartments = [
-            "Al Mudhaibi Health Center", "Wadi Bani Khalid Hospital", "Sinaw Health Hospital",
-            "Ibra Health Center", "Sinaw Health Center", "Al Yahmadi Health Center",
-            "Al Mudhaibi Health Center (New)", "Samad Al Shaan Hospital", "Bidiyah Hospital",
-            "Al Qabil Health Center", "Wadi Dama Wa At Taiyyin Hospital", "Al Dhahir Health Center",
-            "Al Jaza Health Center", "Sumayyan Health Center", "Al Jardaa Health Center",
-            "Al Aflaj Health Center", "Miss Health Centre",
-            "Ibra - Emergency Department Doctor", "Ibra - Emergency Department Nurse", "Ibra - Internal Medicine Department", 
-            "Ibra - General Surgery Department", "Ibra - Paediatrician", "Ibra - Obstetrics and Gynecology Department", 
-            "Ibra - Orthopedics Department", "Ibra - Ophthalmology Department", "Ibra - ENT Department", 
-            "Ibra - Anesthesia Department", "Ibra - Dialysis Unit", "Ibra - Radiology Department", 
-            "Ibra - Laboratory Department", "Ibra - Physiotherapy Department", "Ibra - Clinical Nutrition Department", 
-            "Ibra - Pharmacy Department", "Ibra - Male Medical and Surgical Ward", "Ibra - Female Medical and Surgical Ward", 
-            "Ibra - Pediatrics Ward", "Ibra - Obstetrics and Gynecology Ward", "Ibra - Adult Intensive Care Unit (ICU)", 
-            "Ibra - Special Care Baby Unit (SCBU)", "Ibra - OPD", "Ibra - Nephrologist", "Ibra - DS Nurse", 
-            "Ibra - OT Nurse", "Ibra - RT"
-        ];
+            div.querySelector('.btn-remove').addEventListener('click', () => {
+                div.remove();
+            });
+            
+            container.appendChild(div);
+        }
 
-        function pushFileRuleInputRow(labelVal = '', exampleVal = '') {
-            const wrapper = document.getElementById('fileArrayWrapper');
-            const row = document.createElement('div');
-            row.className = 'array-item-row';
-            row.innerHTML = `
-                <input type="text" class="file-label-item" placeholder="Document Label (e.g. ACLS Card)" value="${labelVal}" required>
-                <input type="text" class="file-example-item" placeholder="Reference Guide Image URL" value="${exampleVal}">
-                <button type="button" class="btn-remove">✕</button>
-            `;
-            
-            row.querySelector('.btn-remove').addEventListener('click', () => {
-                row.remove();
-            });
-            
-            wrapper.appendChild(row);
-        }
+        async function fetchAndRenderAdminDashboard() {
+            const container = document.getElementById('adminCoursesMatrixContainer');
+            
+            const { data: courses, error } = await client
+                .from('courses')
+                .select('*')
+                .order('id', { ascending: false });
 
-        async function seedAndFetchMasterInstitutions() {
-            const { data: existing } = await client.from('institutions').select('*');
-            if (!existing || existing.length === 0) {
-                const insertPayload = masterInstitutionsAndDepartments.map(name => ({ name }));
-                await client.from('institutions').insert(insertPayload);
-                const { data: updated } = await client.from('institutions').select('*');
-                globalInstitutionsList = updated || [];
-            } else {
-                globalInstitutionsList = existing;
-            }
-        }
+            if (error) {
+                container.innerHTML = `<div style="color: #ef4444; padding:20px;">Error parsing schema information matrices: ${error.message}</div>`;
+                return;
+            }
 
-        function renderAllocationMappingFramework(currentMap = []) {
-            const container = document.getElementById('allocationWrapper');
-            container.innerHTML = globalInstitutionsList.map(inst => {
-                const match = currentMap.find(m => m.institution_id === inst.id);
-                const defaultSlots = match ? match.max_slots : (inst.name.startsWith("Ibra - ") ? 3 : 1);
-                const currentCount = match ? match.registered_count : 0;
-                const checkedStatus = match || currentMap.length === 0 ? 'checked' : '';
-                const categoryType = inst.name.startsWith("Ibra - ") ? "IBRA" : "OTHER";
+            liveCourseConfigsCached = courses || [];
 
-                return `
-                    <div class="allocation-item" data-category="${categoryType}" data-id="${inst.id}">
-                        <label>
-                            <input type="checkbox" class="inst-checkbox-target" data-id="${inst.id}" data-current-count="${currentCount}" ${checkedStatus}>
-                            <span>${inst.name}</span>
-                        </label>
-                        <input type="number" class="inst-slots-target" data-id="${inst.id}" min="0" placeholder="Cap" value="${defaultSlots}">
-                    </div>
-                `;
-            }).join('');
-            
-            applyAllocationFilter();
-        }
+            if (liveCourseConfigsCached.length === 0) {
+                container.innerHTML = `<div style="color: #64748b; text-align: center; padding: 40px;">No operational course infrastructure found inside active tables.</div>`;
+                return;
+            }
 
-        function applyAllocationFilter() {
-            const filterVal = document.getElementById('allocationFilterSelect').value;
-            const items = document.querySelectorAll('.allocation-item');
-            
-            items.forEach(item => {
-                const cat = item.getAttribute('data-category');
-                if (filterVal === 'ALL' || filterVal === cat) {
-                    item.classList.remove('hidden-element');
-                } else {
-                    item.classList.add('hidden-element');
-                }
-            });
-        }
+            container.innerHTML = liveCourseConfigsCached.map(course => {
+                let fileLabels = [];
+                let fileExamples = [];
+                try {
+                    fileLabels = Array.isArray(course.file_labels) ? course.file_labels : JSON.parse(course.file_labels || "[]");
+                    fileExamples = Array.isArray(course.file_examples) ? course.file_examples : JSON.parse(course.file_examples || "[]");
+                } catch(e) {
+                    fileLabels = [];
+                    fileExamples = [];
+                }
 
-        function handleBulkSelectionToggle() {
-            const selectAction = document.getElementById('allocationBulkSelectAction').value;
-            if (!selectAction) return;
+                let designationBadges = '';
+                try {
+                    const parsedDesignations = Array.isArray(course.target_designation) ? course.target_designation : JSON.parse(course.target_designation || "[]");
+                    designationBadges = parsedDesignations.map(d => `<span class="badge badge-designation">${d}</span>`).join('');
+                } catch(e) {
+                    designationBadges = `<span class="badge badge-designation">${course.target_designation || 'All'}</span>`;
+                }
 
-            const visibleItems = document.querySelectorAll('.allocation-item:not(.hidden-element)');
-            visibleItems.forEach(item => {
-                const checkbox = item.querySelector('.inst-checkbox-target');
-                if (checkbox) {
-                    checkbox.checked = (selectAction === 'ALL');
-                }
-            });
-            document.getElementById('allocationBulkSelectAction').value = ""; 
-        }
+                let dynamicVerificationRulesMarkup = '';
+                if (fileLabels.length > 0) {
+                    let structuralRuleItems = '';
+                    for (let i = 0; i < fileLabels.length; i++) {
+                        const label = fileLabels[i];
+                        const imgUrl = fileExamples[i] || '';
+                        const fallbackImg = 'this.style.display="none"';
+                        
+                        const imageElement = imgUrl ? `
+                            <a href="${imgUrl}" target="_blank">
+                                <img src="${imgUrl}" alt="Blueprint Preview" onerror='${fallbackImg}'>
+                            </a>
+                        ` : `<div style="width:60px; height:60px; background:#e2e8f0; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:9px; color:#94a3b8; text-align:center; padding:2px;">No Image Rule</div>`;
 
-        function handleBulkSeatsOverride() {
-            const bulkValueString = document.getElementById('bulkSeatsCountInput').value;
-            if (bulkValueString === "") {
-                alert("Please input a valid chair mapping count capacity first.");
-                return;
-            }
-            const seatCount = parseInt(bulkValueString, 10);
-            const visibleCheckedItems = document.querySelectorAll('.allocation-item:not(.hidden-element)');
-            let directCount = 0;
+                        structuralRuleItems += `
+                            <div class="rule-preview-card">
+                                ${imageElement}
+                                <div class="rule-details">
+                                    <b>${label}</b>
+                                    <span>Rule ID: IDX-0${i+1}</span>
+                                </div>
+                            </div>
+                        `;
+                    }
 
-            visibleCheckedItems.forEach(item => {
-                const checkbox = item.querySelector('.inst-checkbox-target');
-                const slotsInput = item.querySelector('.inst-slots-target');
-                if (checkbox && checkbox.checked && slotsInput) {
-                    slotsInput.value = seatCount;
-                    directCount++;
-                }
-            });
+                    dynamicVerificationRulesMarkup = `
+                        <div class="verification-rules-box">
+                            <h4>Dynamic Verification Rules Parameters Matrix</h4>
+                            <div class="rule-grid">${structuralRuleItems}</div>
+                        </div>
+                    `;
+                } else {
+                    dynamicVerificationRulesMarkup = `
+                        <div class="verification-rules-box" style="color: #16a34a; font-size:12px; font-weight:bold;">
+                            ✅ This course profile does not require file upload parameter matches.
+                        </div>
+                    `;
+                }
 
-            alert(`Successfully updated localized seats to ${seatCount} for ${directCount} chosen institutions.`);
-        }
+                return `
+                    <div class="course-item" id="course_block_${course.id}">
+                        <div class="course-header">
+                            <div class="course-title-block">
+                                <h3>${course.name}</h3>
+                                <div class="course-meta">🗓️ Event Date: <b>${course.course_date}</b> | Available Base Seats Allocation: <b>${course.seats}</b></div>
+                            </div>
+                            <button class="btn-delete-course" data-id="${course.id}">Delete</button>
+                        </div>
+                        <div>
+                            <span class="badge badge-gender">Sex Restriction: ${course.allowed_sex || 'Both'}</span>
+                            ${designationBadges}
+                        </div>
+                        ${dynamicVerificationRulesMarkup}
+                    </div>
+                `;
+            }).join('');
 
-        async function reloadAdminConsoleDashboard() {
-            await seedAndFetchMasterInstitutions();
-            
-            const { data: courses, error: errC } = await client.from('courses').select('*').order('id', { ascending: true });
-            const tbody = document.getElementById('coursesMainTableBody');
-            
-            if (errC) {
-                tbody.innerHTML = `<tr><td colspan="6" style="color:#dc2626; text-align:center; padding: 20px;">Error indexing courses table data arrays.</td></tr>`;
-            } else if (!courses || courses.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#64748b; padding: 20px;">No tracked courses inside live configuration space.</td></tr>`;
-            } else {
-                tbody.innerHTML = courses.map(c => {
-                    let fileLabels = [];
-                    try {
-                        if (Array.isArray(c.file_labels)) {
-                            fileLabels = c.file_labels;
-                        } else if (typeof c.file_labels === 'string') {
-                            fileLabels = JSON.parse(c.file_labels);
-                        }
-                    } catch (e) {
-                        fileLabels = [];
-                    }
+            document.querySelectorAll('.btn-delete-course').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    if (!confirm("Are you sure you want to remove this course configuration from active operations?")) return;
+                    
+                    e.target.disabled = true;
+                    const { error: deleteErr } = await client.from('courses').delete().eq('id', id);
+                    if (deleteErr) {
+                        alert("Fail processing item extraction: " + deleteErr.message);
+                        e.target.disabled = false;
+                        return;
+                    }
+                    fetchAndRenderAdminDashboard();
+                });
+            });
+        }
 
-                    if (!Array.isArray(fileLabels)) fileLabels = [];
+        async function createNewCourseProfileSequence() {
+            const name = document.getElementById('courseName').value.trim();
+            const date = document.getElementById('courseDate').value;
+            const seats = Number(document.getElementById('totalSeats').value);
+            const sex = document.getElementById('allowedSex').value;
+            
+            const designationSelect = document.getElementById('targetDesignations');
+            const targetDesignationsArray = Array.from(designationSelect.selectedOptions).map(opt => opt.value);
 
-                    const badgeHtml = fileLabels.map(l => `<span class="badge-info">${l}</span>`).join(' ') || '<span class="badge-info">None</span>';
-                    const sexAllowed = c.allowed_sex || 'Both';
-                    const availableSeats = c.seats !== undefined && c.seats !== null ? c.seats : 0;
-                    const courseNameClean = c.name || 'Unnamed Course';
-                    const courseDateClean = c.course_date || 'N/A';
+            if (!name || !date || isNaN(seats) || seats <= 0) {
+                alert("Please fully establish core parameter entries (Title, Date, and Seats metrics).");
+                return;
+            }
 
-                    return `
-                        <tr>
-                            <td><b>${courseNameClean}</b></td>
-                            <td>${courseDateClean}</td>
-                            <td>${availableSeats} seats</td>
-                            <td><span class="badge-info" style="background:#f5f3ff; color:#7c3aed;">${sexAllowed}</span></td>
-                            <td>${badgeHtml}</td>
-                            <td class="action-cell">
-                                <button class="btn-tbl-edit" data-id="${c.id}">Edit Matrix</button>
-                                <button class="btn-tbl-delete" data-id="${c.id}">Remove</button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
+            const labelElements = document.querySelectorAll('.rule-label-input');
+            const imageElements = document.querySelectorAll('.rule-image-input');
+            
+            const fileLabelsList = [];
+            const fileExamplesList = [];
 
-                document.querySelectorAll('.btn-tbl-edit').forEach(b => b.addEventListener('click', () => triggerEditOperationalMode(b.getAttribute('data-id'))));
-                document.querySelectorAll('.btn-tbl-delete').forEach(b => b.addEventListener('click', () => deleteTargetCourseTrack(b.getAttribute('data-id'))));
-            }
-        }
+            for (let i = 0; i < labelElements.length; i++) {
+                const labelText = labelElements[i].value.trim();
+                const imageLink = imageElements[i].value.trim();
+                if (labelText) {
+                    fileLabelsList.push(labelText);
+                    fileExamplesList.push(imageLink);
+                }
+            }
 
-        async function triggerEditOperationalMode(id) {
-            editingCourseId = Number(id);
-            document.getElementById('formPanelTitle').innerText = "Modify Operational Managed Course Elements";
-            document.getElementById('cancelEditBtn').classList.remove('hidden-element');
+            const submitBtn = document.getElementById('submitCourseBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Deploying parameters array structure...";
 
-            const { data: course } = await client.from('courses').select('*').eq('id', editingCourseId).single();
-            if (!course) return;
+            try {
+                const { error: insertError } = await client.from('courses').insert({
+                    name: name,
+                    course_date: date,
+                    seats: seats,
+                    allowed_sex: sex,
+                    target_designation: targetDesignationsArray,
+                    file_labels: fileLabelsList,
+                    file_examples: fileExamplesList
+                });
 
-            document.getElementById('courseName').value = course.name || '';
-            document.getElementById('courseDate').value = course.course_date || '';
-            document.getElementById('courseSeats').value = course.seats !== undefined ? course.seats : '';
-            document.getElementById('courseGender').value = course.allowed_sex || 'Both';
+                if (insertError) throw insertError;
 
-            document.getElementById('fileArrayWrapper').innerHTML = '';
-            
-            let labels = [];
-            let examples = [];
-            try {
-                labels = Array.isArray(course.file_labels) ? course.file_labels : (typeof course.file_labels === 'string' ? JSON.parse(course.file_labels) : []);
-                examples = Array.isArray(course.file_examples) ? course.file_examples : (typeof course.file_examples === 'string' ? JSON.parse(course.file_examples) : []);
-            } catch(e) {
-                labels = [];
-                examples = [];
-            }
-            
-            if(!Array.isArray(labels)) labels = [];
-            if(!Array.isArray(examples)) examples = [];
+                alert("Course pipeline configured and successfully activated!");
+                document.getElementById('courseName').value = '';
+                document.getElementById('courseDate').value = '';
+                document.getElementById('totalSeats').value = '';
+                document.getElementById('mappingItemsContainer').innerHTML = '';
+                
+                await fetchAndRenderAdminDashboard();
+            } catch(err) {
+                alert("Pipeline sync issue occurred: " + (err.message || JSON.stringify(err)));
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Deploy Course Infrastructure";
+            }
+        }
 
-            if (labels.length === 0) {
-                pushFileRuleInputRow('Required Document', '');
-            } else {
-                labels.forEach((lbl, idx) => pushFileRuleInputRow(lbl, examples[idx] || ''));
-            }
+        document.getElementById('addRuleRowBtn').addEventListener('click', () => addRuleRow('', ''));
+        document.getElementById('submitCourseBtn').addEventListener('click', createNewCourseProfileSequence);
 
-            const { data: mappingAllocations } = await client.from('course_institutions').select('*').eq('course_id', editingCourseId);
-            renderAllocationMappingFramework(mappingAllocations || []);
-            
-            document.getElementById('courseName').scrollIntoView({ behavior: 'smooth' });
-        }
+        // Prepopulate default recommendations
+        addRuleRow('Professional Registration License Copy', 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=400&q=80');
+        addRuleRow('BLS Certificate (Valid)', '');
 
-        function exitEditOperationalMode() {
-            editingCourseId = null;
-            document.getElementById('formPanelTitle').innerText = "Create New Managed Course";
-            document.getElementById('cancelEditBtn').classList.add('hidden-element');
-            document.getElementById('courseConfigForm').reset();
-            document.getElementById('fileArrayWrapper').innerHTML = '';
-            document.getElementById('bulkSeatsCountInput').value = '';
-            document.getElementById('allocationFilterSelect').value = 'ALL';
-            pushFileRuleInputRow('Required Document', '');
-            renderAllocationMappingFramework([]);
-        }
-
-        async function deleteTargetCourseTrack(id) {
-            if (confirm("Are you absolutely sure you want to remove this course configuration track from the database?")) {
-                const { error } = await client.from('courses').delete().eq('id', Number(id));
-                if (!error) {
-                    alert("Course successfully removed.");
-                    reloadAdminConsoleDashboard();
-                    if (editingCourseId === Number(id)) exitEditOperationalMode();
-                } else {
-                    alert("Removal error: " + error.message);
-                }
-            }
-        }
-
-        async function handleFormSubmission(e) {
-            e.preventDefault();
-            
-            const name = document.getElementById('courseName').value.trim();
-            const course_date = document.getElementById('courseDate').value;
-            const seats = parseInt(document.getElementById('courseSeats').value, 10);
-            const allowed_sex = document.getElementById('courseGender').value;
-
-            const labelElements = document.querySelectorAll('.file-label-item');
-            const exampleElements = document.querySelectorAll('.file-example-item');
-            
-            const file_labels = [];
-            const file_examples = [];
-            
-            labelElements.forEach((el, index) => {
-                file_labels.push(el.value.trim());
-                file_examples.push(exampleElements[index] ? exampleElements[index].value.trim() : '');
-            });
-
-            const required_files = file_labels.length;
-
-            if (editingCourseId) {
-                const { error: updErr } = await client.from('courses').update({
-                    name, course_date, seats, required_files, file_labels, file_examples, allowed_sex
-                }).eq('id', editingCourseId);
-
-                if (updErr) {
-                    alert("Matrix transaction insertion execution error: " + updErr.message);
-                    return;
-                }
-
-                await client.from('course_institutions').delete().eq('course_id', editingCourseId);
-                await pushAllocationRecords(editingCourseId);
-                
-                alert("Course configurations updated successfully.");
-                exitEditOperationalMode();
-            } else {
-                const { data: newCourse, error: insErr } = await client.from('courses').insert({
-                    name, course_date, seats, required_files, file_labels, file_examples, allowed_sex
-                }).select().single();
-
-                if (insErr) {
-                    alert("Creation module error pipeline rejection: " + insErr.message);
-                    return;
-                }
-
-                await pushAllocationRecords(newCourse.id);
-                alert("New managed course added successfully.");
-                exitEditOperationalMode();
-            }
-
-            await reloadAdminConsoleDashboard();
-        }
-
-        async function pushAllocationRecords(courseId) {
-            const allocationRows = [];
-            const checkboxes = document.querySelectorAll('.inst-checkbox-target');
-            
-            checkboxes.forEach(chk => {
-                if (chk.checked) {
-                    const instId = Number(chk.getAttribute('data-id'));
-                    const currentCount = parseInt(chk.getAttribute('data-current-count'), 10) || 0;
-                    const slotsInput = document.querySelector(`.inst-slots-target[data-id="${instId}"]`);
-                    const max_slots = slotsInput ? parseInt(slotsInput.value, 10) || 1 : 1;
-                    
-                    allocationRows.push({
-                        course_id: courseId,
-                        institution_id: instId,
-                        max_slots: max_slots,
-                        registered_count: currentCount
-                    });
-                }
-            });
-
-            if (allocationRows.length > 0) {
-                await client.from('course_institutions').insert(allocationRows);
-            }
-        }
-
-        window.pushFileRuleInputRow = pushFileRuleInputRow;
-
-        document.getElementById('addFileRuleRowBtn').addEventListener('click', () => pushFileRuleInputRow('Required Document', ''));
-        document.getElementById('cancelEditBtn').addEventListener('click', exitEditOperationalMode);
-        document.getElementById('courseConfigForm').addEventListener('submit', handleFormSubmission);
-        
-        document.getElementById('allocationFilterSelect').addEventListener('change', applyAllocationFilter);
-        document.getElementById('allocationBulkSelectAction').addEventListener('change', handleBulkSelectionToggle);
-        document.getElementById('applyBulkSeatsBtn').addEventListener('click', handleBulkSeatsOverride);
-
-        (async function init() {
-            await seedAndFetchMasterInstitutions();
-            pushFileRuleInputRow('Required Document', '');
-            renderAllocationMappingFramework([]);
-            await reloadAdminConsoleDashboard();
-        })();
-    </script>
+        fetchAndRenderAdminDashboard();
+    </script>
 </body>
 </html>
