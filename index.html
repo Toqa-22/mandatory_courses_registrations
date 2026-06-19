@@ -47,7 +47,7 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
-        h2, h3, h4 {
+        h2, h3 {
             margin-top: 0;
             font-weight: 600;
         }
@@ -97,82 +97,35 @@
 
         .hidden-element { display: none !important; }
 
-        /* Split Section Allocation Layout Styling */
-        .allocation-split-container {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            margin-top: 12px;
-        }
-
-        .allocation-section-box {
+        .allocation-container-box {
             border: 1px solid var(--border);
             border-radius: 8px;
-            background: #f8fafc;
-            padding: 14px;
-        }
-
-        .allocation-section-title {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 8px;
-            padding-bottom: 4px;
-            border-bottom: 1px dashed var(--border);
-        }
-
-        .allocation-list-scroll {
-            max-height: 180px;
+            padding: 12px;
+            max-height: 250px;
             overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
+            margin-top: 10px;
         }
 
         .allocation-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 6px 8px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 6px;
+            padding: 8px;
+            border-bottom: 1px solid var(--border);
         }
 
-        /* Pure Text Alignment and Department Form Alignment Fixes */
+        .allocation-item:last-child { border-bottom: none; }
+
         .allocation-item label {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             margin: 0;
             cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            flex: 1;
-            text-align: left;
-        }
-
-        .allocation-item label span {
-            display: inline-block;
-            vertical-align: middle;
-            line-height: 1.2;
-        }
-
-        .allocation-item input[type="checkbox"] {
-            margin: 0;
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-            flex-shrink: 0;
         }
 
         .allocation-item input[type="number"] {
             width: 80px;
-            padding: 4px 8px;
-            font-size: 13px;
-            height: 28px;
         }
 
         .table-responsive {
@@ -321,16 +274,14 @@
                     <button type="button" class="btn btn-secondary" id="applyBulkSeatsBtn" style="padding: 6px 12px;">Override Seats</button>
                 </div>
 
-                <div class="allocation-split-container">
-                    <div id="ibraSectionBox" class="allocation-section-box">
-                        <div class="allocation-section-title">Ibra Institutional Allocations</div>
-                        <div id="ibraAllocationWrapper" class="allocation-list-scroll"></div>
-                    </div>
-                    
-                    <div id="otherSectionBox" class="allocation-section-box">
-                        <div class="allocation-section-title">Other Institutional Allocations</div>
-                        <div id="otherAllocationWrapper" class="allocation-list-scroll"></div>
-                    </div>
+                <div id="ibraSectionBox" style="margin-top: 15px;">
+                    <span style="font-size: 14px; font-weight: bold; color: var(--text-muted);">Ibra Institutional Allocations</span>
+                    <div id="ibraAllocationWrapper" class="allocation-container-box"></div>
+                </div>
+                
+                <div id="otherSectionBox" style="margin-top: 15px;">
+                    <span style="font-size: 14px; font-weight: bold; color: var(--text-muted);">Other Institutional Allocations</span>
+                    <div id="otherAllocationWrapper" class="allocation-container-box"></div>
                 </div>
 
                 <div style="margin-top: 20px;">
@@ -432,9 +383,9 @@
 
                 const itemMarkup = `
                     <div class="allocation-item" data-category="${categoryType}" data-id="${inst.id}">
-                        <label>
-                            <input type="checkbox" class="inst-checkbox-target" data-id="${inst.id}" data-current-count="${currentCount}" ${checkedStatus}>
-                            <span>${inst.name}</span>
+                        <label style="display: flex; align-items: center; gap: 8px; margin: 0; cursor: pointer; text-align: left;">
+                            <input type="checkbox" class="inst-checkbox-target" data-id="${inst.id}" data-current-count="${currentCount}" ${checkedStatus} style="margin: 0; vertical-align: middle;">
+                            <span style="display: inline-block; vertical-align: middle; line-height: 1.2;">${inst.name}</span>
                         </label>
                         <input type="number" class="inst-slots-target" data-id="${inst.id}" min="0" placeholder="Cap" value="${defaultSlots}">
                     </div>
