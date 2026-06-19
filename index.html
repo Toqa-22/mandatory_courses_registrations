@@ -5,6 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course Management System Dashboard</title>
     <style>
+        .nav-buttons{
+            display:flex;
+            justify-content:center;
+            margin:25px 0 40px;
+        }
+        
+        .btn-nav{
+            display:inline-flex;
+            align-items:center;
+            gap:10px;
+            padding:15px 35px;
+            background:linear-gradient(135deg,#2563eb,#7c3aed);
+            color:#fff;
+            text-decoration:none;
+            font-size:17px;
+            font-weight:bold;
+            border-radius:50px;
+            box-shadow:0 8px 20px rgba(37,99,235,.25);
+            transition:all .3s ease;
+        }
+        
+        .btn-nav:hover{
+            transform:translateY(-4px);
+            box-shadow:0 14px 30px rgba(37,99,235,.35);
+            background:linear-gradient(135deg,#1d4ed8,#6d28d9);
+        }
+        
+        .btn-nav:active{
+            transform:scale(.97);
+        }
+        
+        .btn-nav::after{
+            content:"→";
+            font-size:18px;
+            transition:transform .3s;
+        }
+        
+        .btn-nav:hover::after{
+            transform:translateX(6px);
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
         body { background: #f4f7fc; min-height: 100vh; padding: 40px 20px; }
         .container { max-width: 1200px; margin: auto; }
