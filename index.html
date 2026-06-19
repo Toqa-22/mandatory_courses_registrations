@@ -44,6 +44,18 @@
         .btn-secondary:hover {
             background: #eff6ff;
         }
+
+        /* Preset Template Buttons Styling */
+        .btn-preset {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+        }
+
+        .btn-preset:hover {
+            background: #e2e8f0;
+        }
+
         .nav-buttons{
             display:flex;
             justify-content:center;
@@ -306,9 +318,13 @@
                     </div>
 
                     <div class="button-group">
+                        <button type="button" class="btn-flex btn-preset" id="loadBlsPresetBtn">Load BLS Info Template</button>
+                        <button type="button" class="btn-flex btn-preset" id="loadAclsPresetBtn">Load ACLS Info Template</button>
+                    </div>
+
+                    <div class="button-group">
                         <button type="submit" class="btn-flex btn-primary-action" id="submitFormBtn">Save</button>
                         <button type="button" class="btn-flex btn-secondary" onclick="clearForm()">Clear Form</button>
-                 
                     </div>
                     
                 </form>
@@ -557,6 +573,42 @@
                 }
             });
             alert(`Successfully updated localized seats to ${seatCount} for ${directCount} chosen institutions.`);
+        }
+
+        /* Preset Template Loader Logic */
+        function loadCoursePreset(type) {
+            if (type === 'BLS') {
+                document.getElementById('courseName').value = 'BLS';
+                document.getElementById('courseSeats').value = '30';
+                document.getElementById('courseGender').value = 'Both';
+                document.getElementById('designationModeSelect').value = 'All';
+                document.getElementById('customDesignationsBox').classList.add('hidden-element');
+                
+                // Set attachment files configuration
+                document.getElementById('documentRequirementSelect').value = 'Yes';
+                document.getElementById('documentRulesConfigContainer').classList.remove('hidden-element');
+                document.getElementById('fileArrayWrapper').innerHTML = '';
+                pushFileRuleInputRow('BLS Certificate / Card', '');
+            } else if (type === 'ACLS') {
+                document.getElementById('courseName').value = 'ACLS';
+                document.getElementById('courseSeats').value = '15';
+                document.getElementById('courseGender').value = 'Both';
+                document.getElementById('designationModeSelect').value = 'Custom';
+                document.getElementById('customDesignationsBox').classList.remove('hidden-element');
+                
+                // Select specific roles for ACLS typically
+                document.querySelectorAll('.desig-checkbox').forEach(cb => {
+                    cb.checked = (cb.value === 'Physician' || cb.value === 'Nurse');
+                });
+
+                // Set attachment files configuration
+                document.getElementById('documentRequirementSelect').value = 'Yes';
+                document.getElementById('documentRulesConfigContainer').classList.remove('hidden-element');
+                document.getElementById('fileArrayWrapper').innerHTML = '';
+                pushFileRuleInputRow('ACLS Certificate / Card', '');
+                pushFileRuleInputRow('BLS Certificate (Prerequisite)', '');
+            }
+            alert(`${type} Template Data Loaded! You can modify fields or just change the Target Date before clicking Save.`);
         }
 
         document.getElementById('designationModeSelect').addEventListener('change', (e) => {
@@ -829,7 +881,9 @@
 
                 await pushAllocationRecords(newCourse.id);
                 alert("New managed course added successfully.");
-                exitEditOperationalMode();
+                
+                // Clear course name & properties but keep form populated so user can quickly swap date/details for multi-generation
+                document.getElementById('courseDate').value = '';
             }
 
             await reloadAdminConsoleDashboard();
@@ -869,6 +923,10 @@
         document.getElementById('allocationFilterSelect').addEventListener('change', applyAllocationFilter);
         document.getElementById('allocationBulkSelectAction').addEventListener('change', handleBulkSelectionToggle);
         document.getElementById('applyBulkSeatsBtn').addEventListener('click', handleBulkSeatsOverride);
+
+        /* Preset Button Event Listeners */
+        document.getElementById('loadBlsPresetBtn').addEventListener('click', () => loadCoursePreset('BLS'));
+        document.getElementById('loadAclsPresetBtn').addEventListener('click', () => loadCoursePreset('ACLS'));
         
         (async function init() {
             await seedAndFetchMasterInstitutions();
