@@ -276,7 +276,8 @@
                             <select id="allocationBulkSelectAction" style="padding: 10px; font-size: 13px;">
                                 <option value="">-- Bulk Select Toggles --</option>
                                 <option value="ALL">Select All Visible</option>
-                           
+                                <option value="IBRA_ALL">Select All Ibra</option>
+                                <option value="OTHER_ALL">Select All Other</option>
                                 <option value="NONE">Deselect All Visible</option>
                             </select>
                         </div>
@@ -284,6 +285,11 @@
                         <div class="allocation-bulk-row">
                
                             <input type="number" id="bulkSeatsCountInput" placeholder="Bulk Chairs Value (e.g. 3)" min="0" style="padding: 10px; font-size: 13px;">
+                            <select id="bulkSeatsTargetFilter" style="padding: 10px; font-size: 13px; max-width: 180px;">
+                                <option value="VISIBLE">Apply to Visible & Checked</option>
+                                <option value="IBRA">Apply to Ibra Only</option>
+                                <option value="OTHER">Apply to Other Only</option>
+                            </select>
                             <button type="button" class="btn-action btn-add" id="applyBulkSeatsBtn">Apply Bulk Seats</button>
                         </div>
 
@@ -440,7 +446,6 @@
                 const checkedStatus = match || currentMap.length === 0 ? 'checked' : '';
                 const categoryType = inst.name.startsWith("Ibra - ") ? "IBRA" : "OTHER";
 
-                // inline style used strictly to keep layout components correctly text-aligned
                 const markup = `
                     <div class="allocation-item" data-category="${categoryType}" data-id="${inst.id}">
                         <label style="text-align: left; display: flex; align-items: center; gap: 6px;">
@@ -477,7 +482,6 @@
                 }
             });
 
-            // Handle panel container visibility switches based on filters
             const visibleIbra = document.querySelectorAll('#allocationWrapperIbra .allocation-item:not(.hidden-element)');
             if (visibleIbra.length === 0) {
                 document.getElementById('ibraSectionBox').classList.add('hidden-element');
@@ -497,11 +501,22 @@
             const selectAction = document.getElementById('allocationBulkSelectAction').value;
             if (!selectAction) return;
 
-            const visibleItems = document.querySelectorAll('.allocation-item:not(.hidden-element)');
-            visibleItems.forEach(item => {
+            const allItems = document.querySelectorAll('.allocation-item');
+            allItems.forEach(item => {
                 const checkbox = item.querySelector('.inst-checkbox-target');
+                const isHidden = item.classList.contains('hidden-element');
+                const cat = item.getAttribute('data-category');
+                
                 if (checkbox) {
-                    checkbox.checked = (selectAction === 'ALL');
+                    if (selectAction === 'ALL' && !isHidden) {
+                        checkbox.checked = true;
+                    } else if (selectAction === 'IBRA_ALL') {
+                        checkbox.checked = (cat === 'IBRA');
+                    } else if (selectAction === 'OTHER_ALL') {
+                        checkbox.checked = (cat === 'OTHER');
+                    } else if (selectAction === 'NONE' && !isHidden) {
+                        checkbox.checked = false;
+                    }
                 }
             });
             document.getElementById('allocationBulkSelectAction').value = ""; 
@@ -514,15 +529,31 @@
                 return;
             }
             const seatCount = parseInt(bulkValueString, 10);
-            const visibleCheckedItems = document.querySelectorAll('.allocation-item:not(.hidden-element)');
+            const targetFilter = document.getElementById('bulkSeatsTargetFilter').value;
+            const allItems = document.querySelectorAll('.allocation-item');
             let directCount = 0;
 
-            visibleCheckedItems.forEach(item => {
+            allItems.forEach(item => {
                 const checkbox = item.querySelector('.inst-checkbox-target');
                 const slotsInput = item.querySelector('.inst-slots-target');
-                if (checkbox && checkbox.checked && slotsInput) {
-                    slotsInput.value = seatCount;
-                    directCount++;
+                const isHidden = item.classList.contains('hidden-element');
+                const cat = item.getAttribute('data-category');
+
+                if (checkbox && slotsInput) {
+                    let shouldApply = false;
+                    
+                    if (targetFilter === 'VISIBLE' && !isHidden && checkbox.checked) {
+                        shouldApply = true;
+                    } else if (targetFilter === 'IBRA' && cat === 'IBRA' && checkbox.checked) {
+                        shouldApply = true;
+                    } else if (targetFilter === 'OTHER' && cat === 'OTHER' && checkbox.checked) {
+                        shouldApply = true;
+                    }
+
+                    if (shouldApply) {
+                        slotsInput.value = seatCount;
+                        directCount++;
+                    }
                 }
             });
             alert(`Successfully updated localized seats to ${seatCount} for ${directCount} chosen institutions.`);
