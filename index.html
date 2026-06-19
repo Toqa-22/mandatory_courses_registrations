@@ -219,12 +219,40 @@
             const wrapper = document.getElementById('fileArrayWrapper');
             const row = document.createElement('div');
             row.className = 'array-item-row';
+            row.style.flexDirection = 'column';
+            row.style.alignItems = 'stretch';
+            row.style.background = '#ffffff';
+            row.style.padding = '10px';
+            row.style.borderRadius = '8px';
+            row.style.border = '1px solid #e2e8f0';
+            row.style.marginBottom = '10px';
+
             row.innerHTML = `
-                <input type="text" class="file-label-item" placeholder="Document Label (e.g. ACLS Card)" value="${labelVal}" required>
-                <input type="text" class="file-example-item" placeholder="Reference Guide Image URL" value="${exampleVal}">
-                <button type="button" class="btn-remove">✕</button>
+                <div style="display: flex; gap: 10px; align-items: center; width: 100%;">
+                    <input type="text" class="file-label-item" placeholder="Document Label (e.g. ACLS Card)" value="${labelVal}" required style="flex: 1;">
+                    <input type="text" class="file-example-item" placeholder="Reference Guide Image URL" value="${exampleVal}" style="flex: 1;">
+                    <button type="button" class="btn-remove">✕</button>
+                </div>
+                <div class="row-image-preview-box" style="margin-top: 8px; display: ${exampleVal ? 'block' : 'none'};">
+                    <img src="${exampleVal || ''}" style="max-width: 100px; max-height: 100px; object-fit: contain; border-radius: 6px; border: 1px solid #cbd5e1; display: block;" onerror="this.parentElement.style.display='none'">
+                </div>
             `;
             
+            const linkInput = row.querySelector('.file-example-item');
+            const previewBox = row.querySelector('.row-image-preview-box');
+            const previewImg = previewBox.querySelector('img');
+
+            linkInput.addEventListener('input', () => {
+                const url = linkInput.value.trim();
+                if (url) {
+                    previewImg.src = url;
+                    previewBox.style.display = 'block';
+                } else {
+                    previewBox.style.display = 'none';
+                    previewImg.src = '';
+                }
+            });
+
             row.querySelector('.btn-remove').addEventListener('click', () => {
                 row.remove();
             });
@@ -330,6 +358,7 @@
             } else {
                 tbody.innerHTML = courses.map(c => {
                     let fileLabels = [];
+                    let fileExamples = [];
                     try {
                         if (Array.isArray(c.file_labels)) {
                             fileLabels = c.file_labels;
@@ -339,10 +368,34 @@
                     } catch (e) {
                         fileLabels = [];
                     }
+                    try {
+                        if (Array.isArray(c.file_examples)) {
+                            fileExamples = c.file_examples;
+                        } else if (typeof c.file_examples === 'string') {
+                            fileExamples = JSON.parse(c.file_examples);
+                        }
+                    } catch (e) {
+                        fileExamples = [];
+                    }
 
                     if (!Array.isArray(fileLabels)) fileLabels = [];
+                    if (!Array.isArray(fileExamples)) fileExamples = [];
 
-                    const badgeHtml = fileLabels.map(l => `<span class="badge-info">${l}</span>`).join(' ') || '<span class="badge-info">None</span>';
+                    const badgeHtml = fileLabels.map((l, idx) => {
+                        const imgUrl = fileExamples[idx] || '';
+                        const imgMarkup = imgUrl ? `
+                            <div style="margin-top: 4px;">
+                                <a href="${imgUrl}" target="_blank">
+                                    <img src="${imgUrl}" style="width:40px; height:40px; object-fit:cover; border-radius:4px; border:1px solid #cbd5e1;" onerror="this.style.display='none'">
+                                </a>
+                            </div>` : '';
+                        return `
+                            <div style="margin-bottom: 8px; display: inline-block; vertical-align: top; margin-right: 8px; text-align: center;">
+                                <span class="badge-info">${l}</span>
+                                ${imgMarkup}
+                            </div>`;
+                    }).join('') || '<span class="badge-info">None</span>';
+                    
                     const sexAllowed = c.allowed_sex || 'Both';
                     const availableSeats = c.seats !== undefined && c.seats !== null ? c.seats : 0;
                     const courseNameClean = c.name || 'Unnamed Course';
