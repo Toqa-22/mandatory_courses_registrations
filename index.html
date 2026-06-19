@@ -41,7 +41,6 @@
         .btn-tbl-edit { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .btn-tbl-delete { background: #fff5f5; color: #e53e3e; border: 1px solid #fed7d7; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
         
-        /* New Custom Allocation Engine Elements */
         .allocation-controls { display: flex; gap: 10px; margin-bottom: 12px; }
         .allocation-bulk-row { display: flex; gap: 10px; margin-bottom: 15px; }
         .allocation-bulk-row input { flex: 1; }
@@ -105,8 +104,7 @@
                             <button type="button" class="btn-action btn-add" id="applyBulkSeatsBtn">Apply Bulk Seats</button>
                         </div>
 
-                        <div class="allocation-container" id="allocationWrapper">
-                            </div>
+                        <div class="allocation-container" id="allocationWrapper"></div>
                     </div>
 
                     <button type="submit" class="btn-primary-action" id="submitFormBtn">Push Action Configuration</button>
@@ -204,8 +202,6 @@
                 const match = currentMap.find(m => m.institution_id === inst.id);
                 const defaultSlots = match ? match.max_slots : (inst.name.startsWith("Ibra - ") ? 3 : 1);
                 const checkedStatus = match || currentMap.length === 0 ? 'checked' : '';
-                
-                // Track classification types for programmatic filtering
                 const categoryType = inst.name.startsWith("Ibra - ") ? "IBRA" : "OTHER";
 
                 return `
@@ -257,7 +253,6 @@
                 return;
             }
             const seatCount = parseInt(bulkValueString, 10);
-            
             const visibleCheckedItems = document.querySelectorAll('.allocation-item:not(.hidden-element)');
             let directCount = 0;
 
@@ -454,17 +449,17 @@
 
         window.pushFileRuleInputRow = pushFileRuleInputRow;
 
-        document.getElementById('addFileRuleRowBtn').addEventListener('click', () => pushFileRuleInputRow('', ''));
+        document.getElementById('addFileRuleRowBtn').addEventListener('click', () => pushFileRuleInputRow('Required Document', ''));
         document.getElementById('cancelEditBtn').addEventListener('click', exitEditOperationalMode);
         document.getElementById('courseConfigForm').addEventListener('submit', handleFormSubmission);
         
-        // Link Allocation Interactive Engine Action Triggers
         document.getElementById('allocationFilterSelect').addEventListener('change', applyAllocationFilter);
         document.getElementById('allocationBulkSelectAction').addEventListener('change', handleBulkSelectionToggle);
         document.getElementById('applyBulkSeatsBtn').addEventListener('click', handleBulkSeatsOverride);
 
         (async function init() {
             await seedAndFetchMasterInstitutions();
+            // Automatically seeds with your provided file configurations setup
             pushFileRuleInputRow('Required Document', '');
             renderAllocationMappingFramework([]);
             await reloadAdminConsoleDashboard();
