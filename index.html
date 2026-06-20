@@ -234,7 +234,7 @@
                     <div class="input-row">
                         <input type="number" id="courseSeats" placeholder="Chairs Limit (e.g. 5)" min="0" required>
                         <select id="courseGender" required>
-                            <option value="Both">Target Sex: Both</option>
+                            <option value="Both">Target Gender: Both</option>
                             <option value="Male">Male Only</option>
                             <option value="Female">Female Only</option>
                         </select>
@@ -729,7 +729,7 @@
                             <td>${courseDateClean}</td>
                             <td>${availableSeats} seats</td>
                             <td>
-                                <div style="margin-bottom: 4px;"><span class="badge-info" style="background:#f5f3ff; color:#7c3aed;">Sex: ${sexAllowed}</span></div>
+                                <div style="margin-bottom: 4px;"><span class="badge-info" style="background:#f5f3ff; color:#7c3aed;">Gender: ${sexAllowed}</span></div>
                                 <div>${desigMarkup}</div>
                             </td>
                             <td>${badgeHtml}</td>
@@ -877,7 +877,7 @@
                         file_labels.push(labelVal);
                         file_examples.push(exampleElements[index] ? exampleElements[index].value.trim() : '');
                     }
-                });
+                });a
                 required_files = file_labels.length;
             }
 
